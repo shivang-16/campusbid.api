@@ -26,8 +26,8 @@ interface IUser extends Document {
     password?: string | null;
     salt?: string | null;
     avatar: {
-      public_id?: string | null;
-      url?: string | null;
+      url: string;
+      key: string;
     };
     details: {
       level: {
@@ -45,6 +45,11 @@ interface IUser extends Document {
       name?: string;
       url?: string;
     }[];
+    documents: {
+      name: string,
+      url: string,
+      key: string,
+    }[],
     resetPasswordToken?: string | null;
     resetTokenExpiry?: Date | null;
     createdAt?: Date;

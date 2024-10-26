@@ -32,8 +32,8 @@ const userSchema = new Schema<IUser>({
   password: { type: String, select: false, default: null },
   salt: { type: String, default: null },
   avatar: {
-    public_id: { type: String, default: null },
     url: { type: String, default: null },
+    key: { type: String, default: null },
   },
   details: {
     level: { 
@@ -47,6 +47,11 @@ const userSchema = new Schema<IUser>({
       updatedAt: { type: Date }
      },
   },
+  documents: [{
+    name: String,
+    url: String,
+    key: String,
+  }],
   badges: [
     {
       name: { type: String, default: "Beginner" },
