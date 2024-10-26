@@ -16,7 +16,7 @@ export const processDocuments = async(docs: any) => {
           };
 
           const putSignedUrl = await getPutObjectSignedUrl(putObjectInfo)
-          return { putUrl: putSignedUrl, getUrl: `${process.env.CAMPUSBID_AWS_ACCOUNT_URL}/${bucketKey}`, key: bucketKey };
+          return { putUrl: putSignedUrl, getUrl: `${process.env.CAMPUSBID_AWS_ACCOUNT_URL}/${bucketKey}`, key: bucketKey, ...doc };
     }))
 }
 

@@ -1,4 +1,5 @@
 import { Document, ObjectId } from "mongoose";
+import { ISupportingDoc } from "./IProject";
 
 interface IUser extends Document {
     name: string;
@@ -10,13 +11,15 @@ interface IUser extends Document {
     };
     address: {
       country?: string | null;
+      city: {},
+      state: {},
       addressLine?: string | null;
       pincode?: number | null;
     };
     academic: {
       branch?: string | null;
       standard?: number | null;
-      schoolOrCollegeName?: string | null;
+      schoolOrCollegeName?: {};
       schoolOrCollegeAddress?: string | null;
     };
     about: {
@@ -45,11 +48,7 @@ interface IUser extends Document {
       name?: string;
       url?: string;
     }[];
-    documents: {
-      name: string,
-      url: string,
-      key: string,
-    }[],
+    documents: ISupportingDoc[]
     resetPasswordToken?: string | null;
     resetTokenExpiry?: Date | null;
     createdAt?: Date;

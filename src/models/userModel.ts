@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import IUser from "../types/IUser";
 import crypto from "crypto";
+import { SupportingDocSchema } from "./helper/supportingDocModel";
 
 const userSchema = new Schema<IUser>({
   name: {
@@ -16,13 +17,15 @@ const userSchema = new Schema<IUser>({
   },
   address: {
     country: { type: String, default: null },
+    city: {},
+    state: {},
     addressLine: { type: String, default: null },
     pincode: { type: Number, default: null },
   },
   academic: {
     branch: { type: String, default: null },
     standard: { type: Number, default: null },
-    schoolOrCollegeName: { type: String, default: null },
+    schoolOrCollegeName: {},
     schoolOrCollegeAddress: { type: String, default: null },
   },
   about: {
@@ -47,11 +50,7 @@ const userSchema = new Schema<IUser>({
       updatedAt: { type: Date }
      },
   },
-  documents: [{
-    name: String,
-    url: String,
-    key: String,
-  }],
+  documents: [SupportingDocSchema],
   badges: [
     {
       name: { type: String, default: "Beginner" },

@@ -6,7 +6,10 @@ import winston from "winston";
 import cookieParser from "cookie-parser";
 import cors from "cors"
 import authRoutes from "./routes/auth";
+import googleRoutes from "./routes/googleAuth";
 import userRoutes from "./routes/user";
+import projectRoutes from "./routes/project";
+import dataRoutes from "./routes/project";
 
 
 config({
@@ -56,7 +59,10 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/google", googleRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/project", projectRoutes);
+app.use("/api/data", dataRoutes);
 
 app.get('/', (req, res) => {
     res.send("Welcome to CampusBid Server")
