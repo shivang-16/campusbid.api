@@ -23,7 +23,6 @@ const googleAuth = async (req, res, next) => {
         const { email, name } = userData;
         if (!email)
             return next(new error_1.CustomError("Email not found", 404));
-        const nameArray = name.split(" ");
         const user = await userModel_1.default.findOne({ email });
         if (user) {
             // If user already exists then log in the user
@@ -38,9 +37,8 @@ const googleAuth = async (req, res, next) => {
         else {
             // If user not found then create a new user
             const newUser = await userModel_1.default.create({
-                firstname: nameArray[0],
-                lastname: nameArray.length > 1 ? nameArray[1] : null,
-                email,
+                name,
+                email
             });
             (0, setCookie_1.default)({
                 user: newUser,
