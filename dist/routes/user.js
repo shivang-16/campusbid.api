@@ -8,4 +8,5 @@ const user_1 = require("../controllers/user");
 const checkAuth_1 = require("../middlewares/checkAuth");
 const router = express_1.default.Router();
 router.post("/save/info", checkAuth_1.checkAuth, user_1.savePersonalInfo);
+router.put("/update/mode", checkAuth_1.checkAuth, user_1.updateUserMode);
 exports.default = router;

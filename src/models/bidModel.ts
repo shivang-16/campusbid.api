@@ -6,7 +6,7 @@ export interface IBid extends Document {
     user: mongoose.Schema.Types.ObjectId;  
     amount: number;                            
     proposal: string;                        
-    status: 'pending' | 'accepted' | 'rejected'; 
+    status: 'pending' | 'accepted' | 'rejected' | 'closed'; 
     createdAt: Date;
     updatedAt: Date;
 }
@@ -34,7 +34,7 @@ const BidSchema: Schema = new Schema({
     supportingDocs: [SupportingDocSchema],
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected'],
+        enum: ['pending', 'accepted', 'rejected', 'closed'],
         default: 'pending',
     },
 }, { timestamps: true }); 

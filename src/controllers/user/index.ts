@@ -13,12 +13,12 @@ export const savePersonalInfo = async (req: Request, res: Response, next: NextFu
       return next(new CustomError('User not found', 404))
     }
 
-    if (bodyData.firstName) {
+    if (bodyData.name) {
       user.name = bodyData.name;
     }
 
-    if (bodyData.role) {
-      user.role = bodyData.role;
+    if (bodyData.username) {
+      user.username = bodyData.username;
     }
 
     if (bodyData.dateOfBirth) {
@@ -100,3 +100,19 @@ export const savePersonalInfo = async (req: Request, res: Response, next: NextFu
     next(new CustomError(error.message))
   }
 };
+
+export const updateUserMode = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { mode } = req.body
+    const user = await User.findById(req.user._id)
+    if(!user) return next(new CustomError("User not exists", 404))
+    
+    if(user.role !== "client") return next(new CustomError("Anonymous mode is for clients only"))
+
+    user.mode = mode
+    await user.save()
+
+  } catch (error) {
+    next(new CustomError((error as Error).message))
+  }
+}

@@ -9,8 +9,13 @@ const userSchema = new Schema<IUser>({
     required: [true, "Please enter your name"],
     default: null,
   },
+  username: {
+    type: String,
+    unique: true,
+  },
   email: { type: String, required: true, unique: true, default: null },
   role: { type: String, enum: [ 'client' , 'provider'  ], default: "provider"},
+  mode: { type: String, enum: [ 'public', 'anonymous'], default: "public"},
   phone: {
     personal: { type: Number, default: null },
     other: { type: Number, default: null },
@@ -61,6 +66,7 @@ const userSchema = new Schema<IUser>({
   resetTokenExpiry: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  access_list: [{ type: Schema.Types.ObjectId, ref: "User"}]
 });
 
 // Pre-save hook for email validation

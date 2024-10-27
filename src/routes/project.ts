@@ -10,7 +10,7 @@ import checkRole from "../middlewares/checkRole";
 const router = express.Router();
 
 router.post("/create", checkAuth, checkRole('client'), createProject);
-router.post('/update/docs', checkAuth, checkRole('client'), updateSupportingDocs)
+router.put('/update/docs', checkAuth, checkRole('client'), updateSupportingDocs)
 router.get("/get", checkAuth, checkRole('provider'), getProjectBasedOnProfile);
 
 

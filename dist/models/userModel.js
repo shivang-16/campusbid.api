@@ -35,8 +35,13 @@ const userSchema = new mongoose_1.Schema({
         required: [true, "Please enter your name"],
         default: null,
     },
+    username: {
+        type: String,
+        unique: true,
+    },
     email: { type: String, required: true, unique: true, default: null },
     role: { type: String, enum: ['client', 'provider'], default: "provider" },
+    mode: { type: String, enum: ['public', 'anonymous'], default: "public" },
     phone: {
         personal: { type: Number, default: null },
         other: { type: Number, default: null },

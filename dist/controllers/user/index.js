@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.savePersonalInfo = void 0;
+exports.updateUserMode = exports.savePersonalInfo = void 0;
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const error_1 = require("../../middlewares/error");
 const processDouments_1 = require("../../helpers/processDouments");
@@ -14,11 +14,11 @@ const savePersonalInfo = async (req, res, next) => {
         if (!user) {
             return next(new error_1.CustomError('User not found', 404));
         }
-        if (bodyData.firstName) {
+        if (bodyData.name) {
             user.name = bodyData.name;
         }
-        if (bodyData.role) {
-            user.role = bodyData.role;
+        if (bodyData.username) {
+            user.username = bodyData.username;
         }
         if (bodyData.dateOfBirth) {
             user.about.dateOfBirth = bodyData.dateOfBirth;
@@ -86,3 +86,19 @@ const savePersonalInfo = async (req, res, next) => {
     }
 };
 exports.savePersonalInfo = savePersonalInfo;
+const updateUserMode = async (req, res, next) => {
+    try {
+        const { mode } = req.body;
+        const user = await userModel_1.default.findById(req.user._id);
+        if (!user)
+            return next(new error_1.CustomError("User not exists", 404));
+        if (user.role !== "client")
+            return next(new error_1.CustomError("Anonymous mode is for clients only"));
+        user.mode = mode;
+        await user.save();
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.updateUserMode = updateUserMode;

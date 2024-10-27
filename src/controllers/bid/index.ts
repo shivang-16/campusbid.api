@@ -46,6 +46,9 @@ export const createBid = async (req: Request, res: Response, next: NextFunction)
         // Save the bid to the database
         await newBid.save();
 
+        projectExists?.bids.push(newBid)
+        await projectExists?.save() 
+
         res.status(201).json({
             success: true,
             message: "Bid created successfully",
@@ -59,12 +62,60 @@ export const createBid = async (req: Request, res: Response, next: NextFunction)
 export const listBidders = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { projectId } = req.params
+        // Validate required fields
+        if (!projectId ) {
+            return next(new CustomError("Project ID is required.", 404))
+        }
+
         const bids = await Bid.find({projectId})
-        if(!bids) next(new CustomError("No bids", 404))
+        if(!bids) return next(new CustomError("No bids", 404))
 
         res.status(200).json({
             success: true,
             bids
+        })
+    } catch (error) {
+        next(new CustomError((error as Error).message));
+    }
+}
+
+export const getBid = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bidId } = req.params
+
+        if (!bidId ) {
+            return next(new CustomError("Bid ID is required.", 404))
+        }
+
+
+        const bid = await Bid.findById(bidId)
+        if(!bid) return next(new CustomError("Bid not exists", 404))
+
+        res.status(200).json({
+            success: true,
+            bid
+        })
+    } catch (error) {
+        next(new CustomError((error as Error).message));
+    }
+}
+
+export const closeBid = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bidId } = req.params
+
+        if (!bidId ) {
+            return next(new CustomError("Bid ID is required.", 404))
+        }
+
+        const bid = await Bid.findById(bidId)
+        if(!bid) return next(new CustomError("Bid not exists", 404))
+
+        bid.status = 'closed'    
+
+        res.status(200).json({
+            success: true,
+            message: "Bid deleted"
         })
     } catch (error) {
         next(new CustomError((error as Error).message));
