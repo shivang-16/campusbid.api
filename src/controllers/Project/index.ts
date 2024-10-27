@@ -42,37 +42,52 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-export const getProjectBasedOnProfile = async (req: Request, res: Response, next: NextFunction) => {
 
+export const updateSupportingDocs = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const colleges = await db.collection("colleges_data").find().toArray();
-        
-        for (const college of colleges) {
-            console.log(college.State)
-            // Find the state data, trimming whitespace and using case-insensitive matching for accuracy
-            const stateData = await db.collection("states_data").findOne({ 
-                name: { $regex: new RegExp(`^${college.State.trim()}$`, "i") } 
-            });
-            
-            const stateCode = stateData?.isoCode || null; // Default to `null` if no match found
-            
-            // Update the document with `stateCode` (will create field if it doesn’t exist)
-            await db.collection("colleges_data").updateOne(
-                { _id: college._id },
-                { $set: { stateCode } }
-            );
-            
-            if (stateCode) {
-                console.log(`Updated college: ${college.College_Name} with stateCode: ${stateCode}`);
-            } else {
-                console.warn(`State code not found for state: ${college.State} in college: ${college.College_Name}`);
-            }
+        const { projectId } = req.params;
+        const { docsToRemove, newSupportingDocs } = req.body; // Expect docsToRemove as an array of document keys or filenames
+
+        // Find the project by ID and ensure it exists
+        const project = await Project.findById(projectId);
+        if (!project) {
+            throw new CustomError("Project not found.", 404);
         }
 
-        console.log("State code update for all colleges is complete.");
+        // Filter out documents to be removed from existing supportingDocs
+        if(docsToRemove) {
+            project.supportingDocs = project.supportingDocs.filter(doc => !docsToRemove.includes(doc.key));
+        }
+
+        // If new supporting documents are provided, process and add them to the array
+        if (newSupportingDocs && newSupportingDocs.length > 0) {
+            const newDocsInfo = await processDocuments(newSupportingDocs);
+            project.supportingDocs.push(
+                ...newDocsInfo.map(doc => ({
+                    fileName: doc?.name!,
+                    fileUrl: doc?.getUrl!,
+                    key: doc?.key!,
+                    ...doc
+                }))
+            );
+        }
+
+        // Save the updated project document
+        await project.save();
+
+        // Respond with updated project data
+        res.status(200).json({
+            message: "Supporting documents updated successfully",
+            project: project,
+        });
     } catch (error) {
-        console.error("Error updating state code in college data:", error);
+        next(new CustomError((error as Error).message));
     }
+};
+
+export const getProjectBasedOnProfile = async (req: Request, res: Response, next: NextFunction) => {
+
+   
     // try {
     //     const userId = req.user._id;
 

@@ -4,7 +4,7 @@ import { ISupportingDoc } from "./IProject";
 interface IUser extends Document {
     name: string;
     email: string;
-    category: 'basic' | 'pro' | 'premium' | 'free';
+    role: 'client' | 'provider';
     phone: {
       personal?: number | null;
       other?: number | null;

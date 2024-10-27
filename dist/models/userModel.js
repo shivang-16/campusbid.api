@@ -36,7 +36,7 @@ const userSchema = new mongoose_1.Schema({
         default: null,
     },
     email: { type: String, required: true, unique: true, default: null },
-    category: { type: String, enum: ['basic', 'pro', 'premium', 'free'], default: "free" },
+    role: { type: String, enum: ['client', 'provider'], default: "provider" },
     phone: {
         personal: { type: Number, default: null },
         other: { type: Number, default: null },

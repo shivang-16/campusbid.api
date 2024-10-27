@@ -37,10 +37,8 @@ const ProjectSchema = new Schema<IProject>(
     },
     bids: [
       {
-        user: { type: Schema.Types.ObjectId, ref: 'User' },
-        amount: { type: Number, required: true },
-        message: { type: String, maxlength: 500 },
-        bidDate: { type: Date, default: Date.now },
+        type: Schema.Types.ObjectId,
+        ref: 'Bid',
       },
     ],
     category: {

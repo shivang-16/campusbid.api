@@ -6,13 +6,12 @@ const db_1 = require("../../db/db");
 const searchCities = async (req, res, next) => {
     const searchTerm = req.query.q?.toString().trim() || "";
     const stateCode = req.query.stateCode?.toString().trim() || "";
-    if (!searchTerm) {
-        res.status(400).json({ message: "Search term is required." });
-        return;
-    }
     try {
         const regex = new RegExp(searchTerm, "i");
-        const query = { name: { $regex: regex } };
+        const query = {};
+        if (searchTerm) {
+            query.name = { $regex: regex };
+        }
         if (stateCode) {
             query.stateCode = stateCode;
         }
@@ -29,13 +28,15 @@ const searchCities = async (req, res, next) => {
 exports.searchCities = searchCities;
 const searchStates = async (req, res, next) => {
     const searchTerm = req.query.q?.toString().trim() || "";
-    if (!searchTerm) {
-        res.status(400).json({ message: "Search term is required." });
-        return;
-    }
     try {
-        const regex = new RegExp(searchTerm, "i");
-        const states = await db_1.db.collection("states_data").find({ name: { $regex: regex } }).limit(50).toArray();
+        let states;
+        if (searchTerm) {
+            const regex = new RegExp(searchTerm, "i");
+            states = await db_1.db.collection("states_data").find({ name: { $regex: regex } }).limit(50).toArray();
+        }
+        else {
+            states = await db_1.db.collection("states_data").find().limit(50).toArray();
+        }
         res.status(200).json({
             message: "States search results fetched successfully",
             data: states,
@@ -48,13 +49,15 @@ const searchStates = async (req, res, next) => {
 exports.searchStates = searchStates;
 const searchColleges = async (req, res, next) => {
     const searchTerm = req.query.q?.toString().trim() || "";
-    if (!searchTerm) {
-        res.status(400).json({ message: "Search term is required." });
-        return;
-    }
     try {
-        const regex = new RegExp(searchTerm, "i");
-        const colleges = await db_1.db.collection("colleges_data").find({ College_Name: { $regex: regex } }).limit(50).toArray();
+        let colleges;
+        if (searchTerm) {
+            const regex = new RegExp(searchTerm, "i");
+            colleges = await db_1.db.collection("colleges_data").find({ College_Name: { $regex: regex } }).limit(50).toArray();
+        }
+        else {
+            colleges = await db_1.db.collection("colleges_data").find().limit(50).toArray();
+        }
         res.status(200).json({
             message: "Colleges search results fetched successfully",
             data: colleges,

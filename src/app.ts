@@ -9,7 +9,7 @@ import authRoutes from "./routes/auth";
 import googleRoutes from "./routes/googleAuth";
 import userRoutes from "./routes/user";
 import projectRoutes from "./routes/project";
-import dataRoutes from "./routes/project";
+import dataRoutes from "./routes/data";
 
 
 config({

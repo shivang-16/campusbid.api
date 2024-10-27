@@ -3,11 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProjectBasedOnProfile = exports.createProject = void 0;
+exports.getProjectBasedOnProfile = exports.updateSupportingDocs = exports.createProject = void 0;
 const error_1 = require("../../middlewares/error");
 const projectModel_1 = __importDefault(require("../../models/projectModel"));
 const processDouments_1 = require("../../helpers/processDouments");
-const db_1 = require("../../db/db");
 const createProject = async (req, res, next) => {
     try {
         const { title, description, budget, deadline, category, skillsRequired, supportingDocs } = req.body;
@@ -42,30 +41,43 @@ const createProject = async (req, res, next) => {
     }
 };
 exports.createProject = createProject;
-const getProjectBasedOnProfile = async (req, res, next) => {
+const updateSupportingDocs = async (req, res, next) => {
     try {
-        const colleges = await db_1.db.collection("colleges_data").find().toArray();
-        for (const college of colleges) {
-            console.log(college.State);
-            // Find the state data, trimming whitespace and using case-insensitive matching for accuracy
-            const stateData = await db_1.db.collection("states_data").findOne({
-                name: { $regex: new RegExp(`^${college.State.trim()}$`, "i") }
-            });
-            const stateCode = stateData?.isoCode || null; // Default to `null` if no match found
-            // Update the document with `stateCode` (will create field if it doesn’t exist)
-            await db_1.db.collection("colleges_data").updateOne({ _id: college._id }, { $set: { stateCode } });
-            if (stateCode) {
-                console.log(`Updated college: ${college.College_Name} with stateCode: ${stateCode}`);
-            }
-            else {
-                console.warn(`State code not found for state: ${college.State} in college: ${college.College_Name}`);
-            }
+        const { projectId } = req.params;
+        const { docsToRemove, newSupportingDocs } = req.body; // Expect docsToRemove as an array of document keys or filenames
+        // Find the project by ID and ensure it exists
+        const project = await projectModel_1.default.findById(projectId);
+        if (!project) {
+            throw new error_1.CustomError("Project not found.", 404);
         }
-        console.log("State code update for all colleges is complete.");
+        // Filter out documents to be removed from existing supportingDocs
+        if (docsToRemove) {
+            project.supportingDocs = project.supportingDocs.filter(doc => !docsToRemove.includes(doc.key));
+        }
+        // If new supporting documents are provided, process and add them to the array
+        if (newSupportingDocs && newSupportingDocs.length > 0) {
+            const newDocsInfo = await (0, processDouments_1.processDocuments)(newSupportingDocs);
+            project.supportingDocs.push(...newDocsInfo.map(doc => ({
+                fileName: doc?.name,
+                fileUrl: doc?.getUrl,
+                key: doc?.key,
+                ...doc
+            })));
+        }
+        // Save the updated project document
+        await project.save();
+        // Respond with updated project data
+        res.status(200).json({
+            message: "Supporting documents updated successfully",
+            project: project,
+        });
     }
     catch (error) {
-        console.error("Error updating state code in college data:", error);
+        next(new error_1.CustomError(error.message));
     }
+};
+exports.updateSupportingDocs = updateSupportingDocs;
+const getProjectBasedOnProfile = async (req, res, next) => {
     // try {
     //     const userId = req.user._id;
     //     // Get the current user with academic college and location data
