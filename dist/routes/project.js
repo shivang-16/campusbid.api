@@ -14,5 +14,6 @@ router.put('/update/docs', checkAuth_1.checkAuth, (0, checkRole_1.default)('clie
 router.get("/assign", checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.assignBidToProject);
 // provider routes
 router.get("/get", checkAuth_1.checkAuth, (0, checkRole_1.default)('provider'), Project_1.getProjectsListing);
+// all
 router.get("/assign", checkAuth_1.checkAuth, Project_1.fetchAssignedBid);
 exports.default = router;

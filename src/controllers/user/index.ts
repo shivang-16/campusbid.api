@@ -3,6 +3,8 @@ import User from "../../models/userModel";
 import IUser from "../../types/IUser";
 import { CustomError } from "../../middlewares/error";
 import { processAvatar, processDocuments } from "../../helpers/processDouments";
+import Bid from "../../models/bidModel";
+import Project from "../../models/projectModel";
 
 export const savePersonalInfo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -117,6 +119,45 @@ export const updateUserMode = async(req: Request, res: Response, next: NextFunct
     await user.save()
 
   } catch (error) {
+    next(new CustomError((error as Error).message))
+  }
+}
+
+export const listUserBids = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+
+      const { status } = req.query
+
+      const query: any = {user: req.user._id}
+      
+      if(status) query.status = status
+
+      const bids = await Bid.find(query)
+      
+      res.status(200).json({
+        success: true,
+        bids
+      })
+
+  } catch (error) {
+    next(new CustomError((error as Error).message))
+  }
+}
+
+export const listUsersProjects = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { status } = req.query
+
+      const query: any = {user: req.user._id}
+      
+      if(status) query.status = status
+
+      const projects = await Project.find(query)
+      
+      res.status(200).json({
+        success: true,
+        projects
+      })  } catch (error) {
     next(new CustomError((error as Error).message))
   }
 }

@@ -3,10 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserMode = exports.savePersonalInfo = void 0;
+exports.listUsersProjects = exports.listUserBids = exports.updateUserMode = exports.savePersonalInfo = void 0;
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const error_1 = require("../../middlewares/error");
 const processDouments_1 = require("../../helpers/processDouments");
+const bidModel_1 = __importDefault(require("../../models/bidModel"));
+const projectModel_1 = __importDefault(require("../../models/projectModel"));
 const savePersonalInfo = async (req, res, next) => {
     try {
         const bodyData = req.body;
@@ -105,3 +107,37 @@ const updateUserMode = async (req, res, next) => {
     }
 };
 exports.updateUserMode = updateUserMode;
+const listUserBids = async (req, res, next) => {
+    try {
+        const { status } = req.query;
+        const query = { user: req.user._id };
+        if (status)
+            query.status = status;
+        const bids = await bidModel_1.default.find(query);
+        res.status(200).json({
+            success: true,
+            bids
+        });
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.listUserBids = listUserBids;
+const listUsersProjects = async (req, res, next) => {
+    try {
+        const { status } = req.query;
+        const query = { user: req.user._id };
+        if (status)
+            query.status = status;
+        const projects = await projectModel_1.default.find(query);
+        res.status(200).json({
+            success: true,
+            projects
+        });
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.listUsersProjects = listUsersProjects;

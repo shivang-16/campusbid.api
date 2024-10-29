@@ -19,6 +19,7 @@ router.get("/assign", checkAuth, checkRole('client'), assignBidToProject);
 // provider routes
 router.get("/get", checkAuth, checkRole('provider'), getProjectsListing);
 
+// all
 router.get("/assign", checkAuth, fetchAssignedBid);
 
 export default router;
