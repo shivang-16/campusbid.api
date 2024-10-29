@@ -53,4 +53,5 @@ const BidSchema = new mongoose_1.Schema({
     },
 }, { timestamps: true });
 BidSchema.index({ user: 1, projectId: 1 }, { unique: true });
-exports.default = mongoose_1.default.model('Bid', BidSchema);
+const Bid = mongoose_1.default.model('Bid', BidSchema);
+exports.default = Bid;

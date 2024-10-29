@@ -1,17 +1,20 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { SupportingDocSchema } from './helper/supportingDocModel';
+import { ISupportingDoc } from '../types/IProject';
 
 export interface IBid extends Document {
+    _id: any; 
     projectId: mongoose.Schema.Types.ObjectId; 
     user: mongoose.Schema.Types.ObjectId;  
     amount: number;                            
     proposal: string;                        
     status: 'pending' | 'accepted' | 'rejected' | 'closed'; 
+    supportingDocs: ISupportingDoc[]
     createdAt: Date;
     updatedAt: Date;
 }
 
-const BidSchema: Schema = new Schema({
+const BidSchema: Schema = new Schema<IBid>({
     projectId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project',
@@ -41,4 +44,5 @@ const BidSchema: Schema = new Schema({
 
 BidSchema.index({ user: 1, projectId: 1 }, { unique: true })
 
-export default mongoose.model<IBid>('Bid', BidSchema);
+const Bid = mongoose.model<IBid>('Bid', BidSchema);
+export default Bid

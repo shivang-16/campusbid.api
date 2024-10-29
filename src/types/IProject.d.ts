@@ -13,8 +13,8 @@ export interface ISupportingDoc {
 }
 
 // Bid Interface
-export interface IBid {
-  user: ObjectId; // Reference to the User who placed the bid
+export interface Bids {
+  user: ObjectId; 
   amount: number;
   message?: string;
   bidDate?: Date;
@@ -30,9 +30,9 @@ export interface IProject extends Document {
   };
   deadline: Date;
   status: 'open' | 'in_progress' | 'completed' | 'closed';
-  assignedTo: mongoose.Types.ObjectId
+  assignedBid: mongoose.Types.ObjectId
   postedBy: ObjectId; // Reference to the User who created the project
-  bids: IBid[]; // Array of bids
+  bids: Bids[]; // Array of bids
   category: 'writing' | 'design' | 'development' | 'data-entry' | 'marketing';
   skillsRequired: string[];
   supportingDocs: ISupportingDoc[]; // Array of supporting documents

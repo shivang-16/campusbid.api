@@ -4,12 +4,15 @@ import Project from "../../models/projectModel";
 import { IProject } from "../../types/IProject";
 import { processDocuments } from "../../helpers/processDouments";
 import User from "../../models/userModel";
-import { db } from "../../db/db";
+import Bid from "../../models/bidModel";
+import mongoose from "mongoose";
 
 export const createProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { title, description, budget, deadline, category, skillsRequired, supportingDocs } = req.body;
         const postedBy = req.user._id; // Assuming user ID is attached to the request (e.g., from middleware)
+        const user = await User.findById(req.user._id)
+        if(!user) next(new CustomError("User not exists", 404))
 
         const docsInfo = await processDocuments(supportingDocs)
         // Create a new project instance
@@ -21,6 +24,11 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
             category,
             skillsRequired,
             postedBy,
+            location: {
+                city: user?.address.city,
+                state: user?.address.state
+            },
+            college: user?.academic.schoolOrCollegeName,
             supportingDocs: docsInfo?.map(doc => ({
                 fileName: doc?.name!,
                 fileUrl: doc?.getUrl!,
@@ -86,8 +94,6 @@ export const updateSupportingDocs = async (req: Request, res: Response, next: Ne
 };
 
 export const getProjectsListing = async (req: Request, res: Response, next: NextFunction) => {
-
-   
     try {
         const userId = req.user._id;
 
@@ -97,29 +103,32 @@ export const getProjectsListing = async (req: Request, res: Response, next: Next
         if (!currentUser) throw new CustomError("User not found", 404);
 
         const { schoolOrCollegeName } = currentUser.academic;
-        const { city } = currentUser.address; // Assuming location has coordinates [longitude, latitude]
+        const { city } = currentUser.address;
 
-        // Distance in meters for nearby projects (e.g., 20km)
-        const MAX_DISTANCE = 20000;
+        // Assuming city has latitude and longitude
+        const userCoordinates = [city.longitude, city.latitude];
+
+        // Distance in meters for nearby projects (e.g., 40km)
+        const MAX_DISTANCE = 40000;
 
         // Find projects from the same college
-        const collegeProjects = await Project.find({ "postedBy.college": schoolOrCollegeName })
-            .populate("postedBy", "academic.college address.location") // Populate to get user data for sorting later
+        const collegeProjects = await Project.find({ "college.College_Name": schoolOrCollegeName })
+            .populate("postedBy", "college location")
             .exec();
 
         // Find nearby projects by location
         const nearbyProjects = await Project.find({
-            "postedBy.location": {
+            "location.city": {
                 $near: {
                     $geometry: {
                         type: "Point",
-                        coordinates: {}, // User's location coordinates
+                        coordinates: userCoordinates,
                     },
                     $maxDistance: MAX_DISTANCE,
                 },
             },
         })
-        .populate("postedBy", "academic.college address.location")
+        .populate("postedBy", "college location")
         .exec();
 
         // Combine and order results: same-college projects first, then nearby projects
@@ -133,3 +142,43 @@ export const getProjectsListing = async (req: Request, res: Response, next: Next
         next(new CustomError((error as Error).message));
     }
 };
+
+export const assignBidToProject = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const bidId = req.query.bidId as string; // Explicitly cast to string
+        console.log("bidId")
+        const project = await Project.findOne({ bid: bidId });
+        if (!project) return next(new CustomError("Project not exists", 400));
+        
+        const bid = await Bid.findById(bidId);
+        if (!bid) return next(new CustomError("Bid not exists", 400));
+
+        project.assignedBid = bid._id;
+        project.status = "in_progress";
+        await project.save(); 
+
+        res.status(200).json({ message: "Bidder assigned to project successfully" });
+    } catch (error) {
+        next(new CustomError((error as Error).message));
+    }
+}
+
+export const fetchAssignedBid = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const projectId = req.query.projectId as string; // Explicitly cast to string
+
+        const project = await Project.findById(projectId);
+        if (!project) return next(new CustomError("Project not exists", 400));
+        
+        const bid = await Bid.findById(project.assignedBid);
+        if (!bid) return next(new CustomError("Bid not exists", 400));
+
+        res.status(200).json({
+            success: true,
+            bid
+        })
+
+    } catch (error) {
+        next(new CustomError((error as Error).message));
+    }
+}

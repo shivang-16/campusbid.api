@@ -33,9 +33,9 @@ const ProjectSchema = new Schema({
         enum: ['open', 'in_progress', 'completed', 'closed'],
         default: 'open',
     },
-    assignedTo: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "User"
+    assignedBid: {
+        type: Schema.Types.ObjectId,
+        ref: "Bid"
     },
     postedBy: {
         type: Schema.Types.ObjectId,
