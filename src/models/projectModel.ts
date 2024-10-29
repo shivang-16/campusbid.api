@@ -20,6 +20,7 @@ const ProjectSchema = new Schema<IProject>(
     budget: {
       min: { type: Number, required: true },
       max: { type: Number, required: true },
+      currency: { type: String, required: true, default: "INR"}
     },
     deadline: {
       type: Date,
@@ -29,6 +30,10 @@ const ProjectSchema = new Schema<IProject>(
       type: String,
       enum: ['open', 'in_progress', 'completed', 'closed'],
       default: 'open',
+    },
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     },
     postedBy: {
       type: Schema.Types.ObjectId,
@@ -43,7 +48,6 @@ const ProjectSchema = new Schema<IProject>(
     ],
     category: {
       type: String,
-      enum: ['writing', 'design', 'development', 'data-entry', 'marketing'],
       required: true,
     },
     skillsRequired: [

@@ -1,4 +1,4 @@
-import { Document, ObjectId } from 'mongoose';
+import mongoose, { Document, ObjectId } from 'mongoose';
 
 // Supporting Document Interface
 export interface ISupportingDoc {
@@ -28,6 +28,7 @@ export interface IProject extends Document {
   };
   deadline: Date;
   status: 'open' | 'in_progress' | 'completed' | 'closed';
+  assignedTo: mongoose.Types.ObjectId
   postedBy: ObjectId; // Reference to the User who created the project
   bids: IBid[]; // Array of bids
   category: 'writing' | 'design' | 'development' | 'data-entry' | 'marketing';

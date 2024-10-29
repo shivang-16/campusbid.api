@@ -22,15 +22,32 @@ const userSchema = new Schema<IUser>({
   },
   address: {
     country: { type: String, default: null },
-    city: {},
-    state: {},
+    city: {
+      name: String,
+      countryCode: String,
+      stateCode: String,
+      latitude: String,
+      longitude: String
+    },
+    state: {
+      name: String,
+      isoCode: String,
+      countryCode: String,
+      latitude: String,
+      longitude: String
+    },
     addressLine: { type: String, default: null },
     pincode: { type: Number, default: null },
   },
   academic: {
     branch: { type: String, default: null },
     standard: { type: Number, default: null },
-    schoolOrCollegeName: {},
+    schoolOrCollegeName: {
+      College_Name: String,
+      State: String,
+      StateCode: String,
+      Stream: String,
+    },
     schoolOrCollegeAddress: { type: String, default: null },
   },
   about: {
