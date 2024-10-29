@@ -1,4 +1,6 @@
 import mongoose, { Document, ObjectId } from 'mongoose';
+import { ICity, ICollege } from './IData';
+import { IState } from 'country-state-city';
 
 // Supporting Document Interface
 export interface ISupportingDoc {
@@ -34,6 +36,11 @@ export interface IProject extends Document {
   category: 'writing' | 'design' | 'development' | 'data-entry' | 'marketing';
   skillsRequired: string[];
   supportingDocs: ISupportingDoc[]; // Array of supporting documents
+  college: ICollege,
+  location: {
+    city: ICity,
+    state: IState
+  }
   createdAt?: Date;
   updatedAt?: Date;
 }

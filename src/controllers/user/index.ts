@@ -21,6 +21,10 @@ export const savePersonalInfo = async (req: Request, res: Response, next: NextFu
       user.username = bodyData.username;
     }
 
+    if (bodyData.role) {
+      user.role = bodyData.role;
+    }
+
     if (bodyData.dateOfBirth) {
       user.about.dateOfBirth = bodyData.dateOfBirth;
     }

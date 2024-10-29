@@ -1,5 +1,6 @@
 import { Document, ObjectId } from "mongoose";
 import { ISupportingDoc } from "./IProject";
+import { ICity, ICollege, IState } from "./IData";
 
 interface IUser extends Document {
     name: string;
@@ -13,15 +14,15 @@ interface IUser extends Document {
     };
     address: {
       country?: string | null;
-      city: {},
-      state: {},
+      city: ICity,
+      state: IState,
       addressLine?: string | null;
       pincode?: number | null;
     };
     academic: {
       branch?: string | null;
       standard?: number | null;
-      schoolOrCollegeName?: {};
+      schoolOrCollegeName?: ICollege;
       schoolOrCollegeAddress?: string | null;
     };
     about: {

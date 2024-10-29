@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { IProject } from '../types/IProject';
 import { SupportingDocSchema } from './helper/supportingDocModel';
+import { citySchema, collegeSchema, stateSchema } from './helper/locationDataModels';
 
 const { Schema, model } = mongoose;
 
@@ -57,6 +58,11 @@ const ProjectSchema = new Schema<IProject>(
       },
     ],
     supportingDocs: [SupportingDocSchema], // Array of supporting documents
+    college: collegeSchema,
+    location : {
+      city: citySchema,
+      state: stateSchema
+    },
     createdAt: {
       type: Date,
       default: Date.now,

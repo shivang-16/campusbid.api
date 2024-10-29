@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import IUser from "../types/IUser";
 import crypto from "crypto";
 import { SupportingDocSchema } from "./helper/supportingDocModel";
+import { citySchema, collegeSchema, stateSchema } from "./helper/locationDataModels";
 
 const userSchema = new Schema<IUser>({
   name: {
@@ -22,32 +23,15 @@ const userSchema = new Schema<IUser>({
   },
   address: {
     country: { type: String, default: null },
-    city: {
-      name: String,
-      countryCode: String,
-      stateCode: String,
-      latitude: String,
-      longitude: String
-    },
-    state: {
-      name: String,
-      isoCode: String,
-      countryCode: String,
-      latitude: String,
-      longitude: String
-    },
+    city: citySchema,
+    state: stateSchema,
     addressLine: { type: String, default: null },
     pincode: { type: Number, default: null },
   },
   academic: {
     branch: { type: String, default: null },
     standard: { type: Number, default: null },
-    schoolOrCollegeName: {
-      College_Name: String,
-      State: String,
-      StateCode: String,
-      Stream: String,
-    },
+    schoolOrCollegeName: collegeSchema,
     schoolOrCollegeAddress: { type: String, default: null },
   },
   about: {
