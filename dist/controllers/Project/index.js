@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProjectBasedOnProfile = exports.updateSupportingDocs = exports.createProject = void 0;
+exports.getProjectsListing = exports.updateSupportingDocs = exports.createProject = void 0;
 const error_1 = require("../../middlewares/error");
 const projectModel_1 = __importDefault(require("../../models/projectModel"));
 const processDouments_1 = require("../../helpers/processDouments");
+const userModel_1 = __importDefault(require("../../models/userModel"));
 const createProject = async (req, res, next) => {
     try {
         const { title, description, budget, deadline, category, skillsRequired, supportingDocs } = req.body;
@@ -77,42 +78,44 @@ const updateSupportingDocs = async (req, res, next) => {
     }
 };
 exports.updateSupportingDocs = updateSupportingDocs;
-const getProjectBasedOnProfile = async (req, res, next) => {
-    // try {
-    //     const userId = req.user._id;
-    //     // Get the current user with academic college and location data
-    //     const currentUser = await User.findById(userId).select("academic.college address.city address.location");
-    //     if (!currentUser) throw new CustomError("User not found", 404);
-    //     const { college } = currentUser.academic;
-    //     const { location } = currentUser.address; // Assuming location has coordinates [longitude, latitude]
-    //     // Distance in meters for nearby projects (e.g., 20km)
-    //     const MAX_DISTANCE = 20000;
-    //     // Find projects from the same college
-    //     const collegeProjects = await Project.find({ "postedBy.college": college })
-    //         .populate("postedBy", "academic.college address.location") // Populate to get user data for sorting later
-    //         .exec();
-    //     // Find nearby projects by location
-    //     const nearbyProjects = await Project.find({
-    //         "postedBy.location": {
-    //             $near: {
-    //                 $geometry: {
-    //                     type: "Point",
-    //                     coordinates: location.coordinates, // User's location coordinates
-    //                 },
-    //                 $maxDistance: MAX_DISTANCE,
-    //             },
-    //         },
-    //     })
-    //     .populate("postedBy", "academic.college address.location")
-    //     .exec();
-    //     // Combine and order results: same-college projects first, then nearby projects
-    //     const projects = [...collegeProjects, ...nearbyProjects];
-    //     res.status(200).json({
-    //         message: "Projects fetched based on profile",
-    //         projects,
-    //     });
-    // } catch (error) {
-    //     next(new CustomError((error as Error).message));
-    // }
+const getProjectsListing = async (req, res, next) => {
+    try {
+        const userId = req.user._id;
+        // Get the current user with academic college and location data
+        const currentUser = await userModel_1.default.findById(userId).select("academic.schoolOrCollegeName address.city address.state");
+        if (!currentUser)
+            throw new error_1.CustomError("User not found", 404);
+        const { schoolOrCollegeName } = currentUser.academic;
+        const { city } = currentUser.address; // Assuming location has coordinates [longitude, latitude]
+        // Distance in meters for nearby projects (e.g., 20km)
+        const MAX_DISTANCE = 20000;
+        // Find projects from the same college
+        const collegeProjects = await projectModel_1.default.find({ "postedBy.college": schoolOrCollegeName })
+            .populate("postedBy", "academic.college address.location") // Populate to get user data for sorting later
+            .exec();
+        // Find nearby projects by location
+        const nearbyProjects = await projectModel_1.default.find({
+            "postedBy.location": {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: {}, // User's location coordinates
+                    },
+                    $maxDistance: MAX_DISTANCE,
+                },
+            },
+        })
+            .populate("postedBy", "academic.college address.location")
+            .exec();
+        // Combine and order results: same-college projects first, then nearby projects
+        const projects = [...collegeProjects, ...nearbyProjects];
+        res.status(200).json({
+            message: "Projects fetched based on profile",
+            projects,
+        });
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
 };
-exports.getProjectBasedOnProfile = getProjectBasedOnProfile;
+exports.getProjectsListing = getProjectsListing;

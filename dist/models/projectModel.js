@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const supportingDocModel_1 = require("./helper/supportingDocModel");
+const locationDataModels_1 = require("./helper/locationDataModels");
 const { Schema, model } = mongoose_1.default;
 const ProjectSchema = new Schema({
     title: {
@@ -21,6 +22,7 @@ const ProjectSchema = new Schema({
     budget: {
         min: { type: Number, required: true },
         max: { type: Number, required: true },
+        currency: { type: String, required: true, default: "INR" }
     },
     deadline: {
         type: Date,
@@ -30,6 +32,10 @@ const ProjectSchema = new Schema({
         type: String,
         enum: ['open', 'in_progress', 'completed', 'closed'],
         default: 'open',
+    },
+    assignedTo: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "User"
     },
     postedBy: {
         type: Schema.Types.ObjectId,
@@ -44,7 +50,6 @@ const ProjectSchema = new Schema({
     ],
     category: {
         type: String,
-        enum: ['writing', 'design', 'development', 'data-entry', 'marketing'],
         required: true,
     },
     skillsRequired: [
@@ -54,6 +59,11 @@ const ProjectSchema = new Schema({
         },
     ],
     supportingDocs: [supportingDocModel_1.SupportingDocSchema], // Array of supporting documents
+    college: locationDataModels_1.collegeSchema,
+    location: {
+        city: locationDataModels_1.citySchema,
+        state: locationDataModels_1.stateSchema
+    },
     createdAt: {
         type: Date,
         default: Date.now,

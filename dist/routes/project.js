@@ -10,5 +10,5 @@ const checkRole_1 = __importDefault(require("../middlewares/checkRole"));
 const router = express_1.default.Router();
 router.post("/create", checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.createProject);
 router.put('/update/docs', checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.updateSupportingDocs);
-router.get("/get", checkAuth_1.checkAuth, (0, checkRole_1.default)('provider'), Project_1.getProjectBasedOnProfile);
+router.get("/get", checkAuth_1.checkAuth, (0, checkRole_1.default)('provider'), Project_1.getProjectsListing);
 exports.default = router;

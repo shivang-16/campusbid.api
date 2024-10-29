@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const crypto_1 = __importDefault(require("crypto"));
 const supportingDocModel_1 = require("./helper/supportingDocModel");
+const locationDataModels_1 = require("./helper/locationDataModels");
 const userSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -48,15 +49,15 @@ const userSchema = new mongoose_1.Schema({
     },
     address: {
         country: { type: String, default: null },
-        city: {},
-        state: {},
+        city: locationDataModels_1.citySchema,
+        state: locationDataModels_1.stateSchema,
         addressLine: { type: String, default: null },
         pincode: { type: Number, default: null },
     },
     academic: {
         branch: { type: String, default: null },
         standard: { type: Number, default: null },
-        schoolOrCollegeName: {},
+        schoolOrCollegeName: locationDataModels_1.collegeSchema,
         schoolOrCollegeAddress: { type: String, default: null },
     },
     about: {
@@ -92,6 +93,7 @@ const userSchema = new mongoose_1.Schema({
     resetTokenExpiry: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+    access_list: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }]
 });
 // Pre-save hook for email validation
 userSchema.pre("save", function (next) {
