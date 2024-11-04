@@ -15,10 +15,9 @@ router.post("/save/info", checkAuth, savePersonalInfo);
 router.put("/update/mode", checkAuth, updateUserMode);
 
 // providers
-router.get("/list/bids", checkAuth, checkRole("provider"), listUserBids);
+router.get("/list/bids", checkAuth, checkRole("freelancer"), listUserBids);
 
 // clients
 router.get("/list/projects", checkAuth, checkRole("client"), listUsersProjects);
 
 export default router;
-   

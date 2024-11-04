@@ -8,6 +8,7 @@ const error_1 = require("../../middlewares/error");
 const bidModel_1 = __importDefault(require("../../models/bidModel"));
 const projectModel_1 = __importDefault(require("../../models/projectModel")); // Assuming Project model is available
 const processDouments_1 = require("../../helpers/processDouments");
+const sendMail_1 = require("../../utils/sendMail");
 const createBid = async (req, res, next) => {
     try {
         const { projectId, amount, proposal, supportingDocs } = req.body;
@@ -45,6 +46,16 @@ const createBid = async (req, res, next) => {
         await newBid.save();
         projectExists?.bids.push(newBid);
         await projectExists?.save();
+        try {
+            await (0, sendMail_1.sendMail)({
+                email: req.user.email,
+                subject: `Application sent for ${projectExists.title}`,
+                message: projectExists.title,
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
         res.status(201).json({
             success: true,
             message: "Bid created successfully",
@@ -105,9 +116,10 @@ const closeBid = async (req, res, next) => {
         if (!bid)
             return next(new error_1.CustomError("Bid not exists", 404));
         bid.status = 'closed';
+        await bid.save();
         res.status(200).json({
             success: true,
-            message: "Bid deleted"
+            message: "Bid closed"
         });
     }
     catch (error) {

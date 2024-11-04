@@ -131,12 +131,10 @@ export const getProjectsListing = async (req: Request, res: Response, next: Next
         .populate("postedBy", "college location")
         .exec();
 
-        // Combine and order results: same-college projects first, then nearby projects
-        const projects = [...collegeProjects, ...nearbyProjects];
-
         res.status(200).json({
             message: "Projects fetched based on profile",
-            projects,
+            collegeProjects,
+            nearbyProjects
         });
     } catch (error) {
         next(new CustomError((error as Error).message));
@@ -145,17 +143,31 @@ export const getProjectsListing = async (req: Request, res: Response, next: Next
 
 export const assignBidToProject = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const bidId = req.query.bidId as string; // Explicitly cast to string
-        console.log("bidId")
+        const bidId = req.query.bidId as string; 
+        const projectId = req.query.projectId as string;
+
         const project = await Project.findOne({ bid: bidId });
         if (!project) return next(new CustomError("Project not exists", 400));
-        
-        const bid = await Bid.findById(bidId);
-        if (!bid) return next(new CustomError("Bid not exists", 400));
 
-        project.assignedBid = bid._id;
-        project.status = "in_progress";
+        const bid = await Bid.findById(bidId)
+        if (!bid) return next(new CustomError("Bid not exists", 400));
+        
+        const bids = await Bid.find({projectId});
+        if (!bids) return next(new CustomError("No Bid not exists", 400));
+
+        project.assignedBid = new mongoose.Types.ObjectId(bidId);
+        project.status = "in_progress"; // updating project status
+        bid.status = "accepted"; // updating bid status
+        
+        const unassignedBids = bids.filter(bid => bid._id === project.assignedBid)
+        for (let unassignedBid of unassignedBids) {
+            unassignedBid.status = "rejected"
+            await unassignedBid.save()
+        }
+
+        await bid.save()
         await project.save(); 
+
 
         res.status(200).json({ message: "Bidder assigned to project successfully" });
     } catch (error) {
@@ -181,4 +193,30 @@ export const fetchAssignedBid = async(req: Request, res: Response, next: NextFun
     } catch (error) {
         next(new CustomError((error as Error).message));
     }
+}
+
+export const updateProjectStatus = async(req: Request, res: Response, next: NextFunction) => {
+   try {
+      const { status } = req.query 
+      const { projectId } = req.params
+
+      if(!status) return next(new CustomError("Please provide status"))
+
+      const statusTypes = ['open', 'in_progress', 'completed', 'closed']
+
+      if(!statusTypes.includes(status?.toString())) return next(new CustomError(`Status must be from ${statusTypes}`, 400))
+
+      if( status === 'completed' || status === 'closed' && req.user.status === 'in_progress') return next(new CustomError("Project status is in progress. We need assigned bidder approval"))
+
+      await Project.findOneAndUpdate({
+        _id: new mongoose.Types.ObjectId(projectId)
+      },{
+        $set: {
+            status: status
+        }
+      }
+    )
+   } catch (error) {
+    next(new CustomError((error as Error).message));
+   }
 }

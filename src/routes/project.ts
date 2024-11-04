@@ -17,7 +17,7 @@ router.put('/update/docs', checkAuth, checkRole('client'), updateSupportingDocs)
 router.get("/assign", checkAuth, checkRole('client'), assignBidToProject);
 
 // provider routes
-router.get("/get", checkAuth, checkRole('provider'), getProjectsListing);
+router.get("/get", checkAuth, checkRole('freelancer'), getProjectsListing);
 
 // all
 router.get("/assign", checkAuth, fetchAssignedBid);

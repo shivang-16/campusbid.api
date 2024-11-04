@@ -13,7 +13,7 @@ router.post("/create", checkAuth_1.checkAuth, (0, checkRole_1.default)('client')
 router.put('/update/docs', checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.updateSupportingDocs);
 router.get("/assign", checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.assignBidToProject);
 // provider routes
-router.get("/get", checkAuth_1.checkAuth, (0, checkRole_1.default)('provider'), Project_1.getProjectsListing);
+router.get("/get", checkAuth_1.checkAuth, (0, checkRole_1.default)('freelancer'), Project_1.getProjectsListing);
 // all
 router.get("/assign", checkAuth_1.checkAuth, Project_1.fetchAssignedBid);
 exports.default = router;

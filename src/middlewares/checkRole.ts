@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "./error";
 
-const checkRole = (role: 'provider' | 'client') => {
+const checkRole = (role: 'freelancer' | 'client') => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (role === "provider" && req.user.role !== role)
+    if (role === "freelancer" && req.user.role !== role)
       return next(new CustomError("Not Authorised", 403));
     if (role === "client" && req.user.role !== role)
       return next(new CustomError("Not Authorised", 403));

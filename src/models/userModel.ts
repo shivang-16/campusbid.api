@@ -12,10 +12,10 @@ const userSchema = new Schema<IUser>({
   },
   username: {
     type: String,
-    unique: true,
+    // unique: true,
   },
   email: { type: String, required: true, unique: true, default: null },
-  role: { type: String, enum: [ 'client' , 'provider'  ], default: "provider"},
+  role: { type: String, enum: [ 'client' , 'freelancer'  ], default: "freelancer"},
   mode: { type: String, enum: [ 'public', 'anonymous'], default: "public"},
   phone: {
     personal: { type: Number, default: null },

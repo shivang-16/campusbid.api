@@ -48,7 +48,7 @@ const BidSchema = new mongoose_1.Schema({
     supportingDocs: [supportingDocModel_1.SupportingDocSchema],
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected', 'closed'],
+        enum: ['pending', 'accepted', 'rejected', 'closed', 'completed', 'uncompleted'],
         default: 'pending',
     },
 }, { timestamps: true });

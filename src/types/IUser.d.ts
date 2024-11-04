@@ -6,7 +6,7 @@ interface IUser extends Document {
     name: string;
     username: string;
     email: string;
-    role: 'client' | 'provider';
+    role: 'client' | 'freelancer';
     mode: 'public' | 'anonymous'
     phone: {
       personal?: number | null;

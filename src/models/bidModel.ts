@@ -37,7 +37,7 @@ const BidSchema: Schema = new Schema<IBid>({
     supportingDocs: [SupportingDocSchema],
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected', 'closed'],
+        enum: ['pending', 'accepted', 'rejected', 'closed', 'completed', 'uncompleted'],
         default: 'pending',
     },
 }, { timestamps: true }); 

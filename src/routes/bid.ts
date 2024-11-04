@@ -5,10 +5,10 @@ import { closeBid, createBid, getBid, listBidders } from "../controllers/bid";
 
 const router = express.Router();
 
-router.post("/create", checkAuth, checkRole('provider'), createBid);
+router.post("/create", checkAuth, checkRole('freelancer'), createBid);
 router.get("/list/:projectId", checkAuth, listBidders);
-router.get("/find/:bidId", checkAuth, checkRole('provider'), getBid);
-router.put("/close/:bidId", checkAuth, checkRole('provider'), closeBid);
+router.get("/find/:bidId", checkAuth, checkRole('freelancer'), getBid);
+router.put("/close/:bidId", checkAuth, checkRole('freelancer'), closeBid);
 
 export default router;
    

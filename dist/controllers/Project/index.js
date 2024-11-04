@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.updateSupportingDocs = exports.createProject = void 0;
+exports.updateProjectStatus = exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.updateSupportingDocs = exports.createProject = void 0;
 const error_1 = require("../../middlewares/error");
 const projectModel_1 = __importDefault(require("../../models/projectModel"));
 const processDouments_1 = require("../../helpers/processDouments");
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const bidModel_1 = __importDefault(require("../../models/bidModel"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const createProject = async (req, res, next) => {
     try {
         const { title, description, budget, deadline, category, skillsRequired, supportingDocs } = req.body;
@@ -118,11 +119,10 @@ const getProjectsListing = async (req, res, next) => {
         })
             .populate("postedBy", "college location")
             .exec();
-        // Combine and order results: same-college projects first, then nearby projects
-        const projects = [...collegeProjects, ...nearbyProjects];
         res.status(200).json({
             message: "Projects fetched based on profile",
-            projects,
+            collegeProjects,
+            nearbyProjects
         });
     }
     catch (error) {
@@ -132,16 +132,26 @@ const getProjectsListing = async (req, res, next) => {
 exports.getProjectsListing = getProjectsListing;
 const assignBidToProject = async (req, res, next) => {
     try {
-        const bidId = req.query.bidId; // Explicitly cast to string
-        console.log("bidId");
+        const bidId = req.query.bidId;
+        const projectId = req.query.projectId;
         const project = await projectModel_1.default.findOne({ bid: bidId });
         if (!project)
             return next(new error_1.CustomError("Project not exists", 400));
         const bid = await bidModel_1.default.findById(bidId);
         if (!bid)
             return next(new error_1.CustomError("Bid not exists", 400));
-        project.assignedBid = bid._id;
-        project.status = "in_progress";
+        const bids = await bidModel_1.default.find({ projectId });
+        if (!bids)
+            return next(new error_1.CustomError("No Bid not exists", 400));
+        project.assignedBid = new mongoose_1.default.Types.ObjectId(bidId);
+        project.status = "in_progress"; // updating project status
+        bid.status = "accepted"; // updating bid status
+        const unassignedBids = bids.filter(bid => bid._id === project.assignedBid);
+        for (let unassignedBid of unassignedBids) {
+            unassignedBid.status = "rejected";
+            await unassignedBid.save();
+        }
+        await bid.save();
         await project.save();
         res.status(200).json({ message: "Bidder assigned to project successfully" });
     }
@@ -169,3 +179,27 @@ const fetchAssignedBid = async (req, res, next) => {
     }
 };
 exports.fetchAssignedBid = fetchAssignedBid;
+const updateProjectStatus = async (req, res, next) => {
+    try {
+        const { status } = req.query;
+        const { projectId } = req.params;
+        if (!status)
+            return next(new error_1.CustomError("Please provide status"));
+        const statusTypes = ['open', 'in_progress', 'completed', 'closed'];
+        if (!statusTypes.includes(status?.toString()))
+            return next(new error_1.CustomError(`Status must be from ${statusTypes}`, 400));
+        if (status === 'completed' || status === 'closed' && req.user.status === 'in_progress')
+            return next(new error_1.CustomError("Project status is in progress. We need assigned bidder approval"));
+        await projectModel_1.default.findOneAndUpdate({
+            _id: new mongoose_1.default.Types.ObjectId(projectId)
+        }, {
+            $set: {
+                status: status
+            }
+        });
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.updateProjectStatus = updateProjectStatus;

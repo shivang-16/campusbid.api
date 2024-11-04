@@ -3,6 +3,7 @@ import { CustomError } from "../../middlewares/error";
 import Bid from "../../models/bidModel";
 import Project from "../../models/projectModel"; // Assuming Project model is available
 import { processDocuments } from "../../helpers/processDouments";
+import { sendMail } from "../../utils/sendMail";
 
 export const createBid = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -49,6 +50,16 @@ export const createBid = async (req: Request, res: Response, next: NextFunction)
         projectExists?.bids.push(newBid)
         await projectExists?.save() 
 
+        try {
+            await sendMail({
+                email: req.user.email,
+                subject: `Application sent for ${projectExists.title}`,
+                message: projectExists.title,
+            })
+        } catch (error) {
+            console.log(error)
+        }
+
         res.status(201).json({
             success: true,
             message: "Bid created successfully",
@@ -87,7 +98,6 @@ export const getBid = async(req: Request, res: Response, next: NextFunction) => 
             return next(new CustomError("Bid ID is required.", 404))
         }
 
-
         const bid = await Bid.findById(bidId)
         if(!bid) return next(new CustomError("Bid not exists", 404))
 
@@ -111,11 +121,12 @@ export const closeBid = async(req: Request, res: Response, next: NextFunction) =
         const bid = await Bid.findById(bidId)
         if(!bid) return next(new CustomError("Bid not exists", 404))
 
-        bid.status = 'closed'    
-
+        bid.status = 'closed' 
+        await bid.save()
+              
         res.status(200).json({
             success: true,
-            message: "Bid deleted"
+            message: "Bid closed"
         })
     } catch (error) {
         next(new CustomError((error as Error).message));
