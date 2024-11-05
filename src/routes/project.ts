@@ -3,6 +3,7 @@ import {
   assignBidToProject,
   createProject,
   fetchAssignedBid,
+  getProjectById,
   getProjectsListing,
   updateSupportingDocs
 } from "../controllers/Project";
@@ -21,6 +22,7 @@ router.get("/get", checkAuth, checkRole('freelancer'), getProjectsListing);
 
 // all
 router.get("/assign", checkAuth, fetchAssignedBid);
+router.get("/get/:projectId", checkAuth, getProjectById);
 
 export default router;
    

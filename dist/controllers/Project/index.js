@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProjectStatus = exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.updateSupportingDocs = exports.createProject = void 0;
+exports.updateProjectStatus = exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.getProjectById = exports.updateSupportingDocs = exports.createProject = void 0;
 const error_1 = require("../../middlewares/error");
 const projectModel_1 = __importDefault(require("../../models/projectModel"));
 const processDouments_1 = require("../../helpers/processDouments");
@@ -89,6 +89,24 @@ const updateSupportingDocs = async (req, res, next) => {
     }
 };
 exports.updateSupportingDocs = updateSupportingDocs;
+const getProjectById = async (req, res, next) => {
+    try {
+        const { projectId } = req.params;
+        if (!projectId)
+            return next(new error_1.CustomError("ProjectId required", 400));
+        const project = await projectModel_1.default.findById(projectId).populate("postedBy");
+        if (!project)
+            return next(new error_1.CustomError("Project not exists", 404));
+        res.status(200).json({
+            success: true,
+            project
+        });
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.getProjectById = getProjectById;
 const getProjectsListing = async (req, res, next) => {
     try {
         const userId = req.user._id;

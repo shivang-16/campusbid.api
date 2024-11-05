@@ -95,6 +95,24 @@ export const updateSupportingDocs = async (req: Request, res: Response, next: Ne
     }
 };
 
+export const getProjectById = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {projectId} = req.params
+        if(!projectId) return next(new CustomError("ProjectId required", 400))
+
+        const project = await Project.findById(projectId).populate("postedBy") 
+        if(!project) return next(new CustomError("Project not exists", 404))
+
+        res.status(200).json({
+            success: true,
+            project
+        })    
+
+    } catch (error) {
+        next(new CustomError((error as Error).message));
+    }
+}
+
 export const getProjectsListing = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user._id;

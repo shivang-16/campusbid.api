@@ -7,7 +7,7 @@ export interface ISupportingDoc {
   fileName: string;
   fileUrl: string;
   key: string;
-  fileType?: 'pdf' | 'doc' | 'docx' | 'png' | 'jpg' | 'jpeg' | 'xlsx' | 'ppt' | 'pptx' | 'txt' | 'other';
+  fileType?: string;
   fileSize?: number; // in bytes
   uploadedAt?: Date;
 }
@@ -27,6 +27,7 @@ export interface IProject extends Document {
   budget: {
     min: number;
     max: number;
+    currency: string;
   };
   deadline: Date;
   status: 'open' | 'in_progress' | 'completed' | 'closed';

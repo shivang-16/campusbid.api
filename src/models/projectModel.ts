@@ -15,8 +15,8 @@ const ProjectSchema = new Schema<IProject>(
     },
     description: {
       type: String,
-      required: true,
-      maxlength: 1000,
+      // required: true,
+      // maxlength: 1000,
     },
     budget: {
       min: { type: Number, required: true },

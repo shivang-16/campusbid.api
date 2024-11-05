@@ -16,4 +16,5 @@ router.get("/assign", checkAuth_1.checkAuth, (0, checkRole_1.default)('client'),
 router.get("/get", checkAuth_1.checkAuth, (0, checkRole_1.default)('freelancer'), Project_1.getProjectsListing);
 // all
 router.get("/assign", checkAuth_1.checkAuth, Project_1.fetchAssignedBid);
+router.get("/get/:projectId", checkAuth_1.checkAuth, Project_1.getProjectById);
 exports.default = router;
