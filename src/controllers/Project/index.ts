@@ -132,21 +132,13 @@ export const getProjectsListing = async (req: Request, res: Response, next: Next
         const MAX_DISTANCE = 40000;
 
         // Find projects from the same college
-        const collegeProjects = await Project.find({ "college.College_Name": schoolOrCollegeName })
+        const collegeProjects = await Project.find({ "college.College_Name": schoolOrCollegeName?.College_Name })
             .populate("postedBy", "college location")
             .exec();
 
         // Find nearby projects by location
         const nearbyProjects = await Project.find({
-            "location.city": {
-                $near: {
-                    $geometry: {
-                        type: "Point",
-                        coordinates: userCoordinates,
-                    },
-                    $maxDistance: MAX_DISTANCE,
-                },
-            },
+            "college.College_Name": { $ne: schoolOrCollegeName?.College_Name }
         })
         .populate("postedBy", "college location")
         .exec();
@@ -157,6 +149,7 @@ export const getProjectsListing = async (req: Request, res: Response, next: Next
             nearbyProjects
         });
     } catch (error) {
+        console.log(error)
         next(new CustomError((error as Error).message));
     }
 };
