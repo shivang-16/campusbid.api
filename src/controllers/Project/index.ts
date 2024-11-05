@@ -44,6 +44,8 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
         res.status(201).json({
             message: "Project created successfully",
             project: newProject,
+            signedUrls: docsInfo?.map(doc => doc?.putUrl)
+
         });
     } catch (error) {
         next(new CustomError((error as Error).message));

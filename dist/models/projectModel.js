@@ -25,7 +25,7 @@ const ProjectSchema = new Schema({
         currency: { type: String, required: true, default: "INR" }
     },
     deadline: {
-        type: Date,
+        type: Schema.Types.Mixed,
         required: true,
     },
     status: {
@@ -50,7 +50,6 @@ const ProjectSchema = new Schema({
     ],
     category: {
         type: String,
-        required: true,
     },
     skillsRequired: [
         {

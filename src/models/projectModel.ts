@@ -24,7 +24,7 @@ const ProjectSchema = new Schema<IProject>(
       currency: { type: String, required: true, default: "INR"}
     },
     deadline: {
-      type: Date,
+      type: Schema.Types.Mixed, 
       required: true,
     },
     status: {
@@ -49,7 +49,6 @@ const ProjectSchema = new Schema<IProject>(
     ],
     category: {
       type: String,
-      required: true,
     },
     skillsRequired: [
       {

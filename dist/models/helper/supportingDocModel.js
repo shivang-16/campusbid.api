@@ -18,12 +18,9 @@ exports.SupportingDocSchema = new Schema({
     },
     fileType: {
         type: String,
-        enum: ['pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg', 'xlsx', 'ppt', 'pptx', 'txt', 'other'],
-        required: true,
     },
     fileSize: {
         type: Number, // in bytes
-        required: true,
         min: 0,
     },
     uploadedAt: {
