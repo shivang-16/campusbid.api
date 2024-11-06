@@ -98,7 +98,11 @@ export const getBid = async(req: Request, res: Response, next: NextFunction) => 
             return next(new CustomError("Bid ID is required.", 404))
         }
 
-        const bid = await Bid.findById(bidId)
+        const bid = await Bid.findById(bidId).populate({
+                path: "user",  
+                select: "name", 
+            })
+
         if(!bid) return next(new CustomError("Bid not exists", 404))
 
         res.status(200).json({

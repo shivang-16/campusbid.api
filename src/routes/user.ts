@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  listFreelancerAssignedProjects,
   listUserBids,
   listUsersProjects,
   savePersonalInfo,
@@ -13,12 +14,14 @@ const router = express.Router();
 // all
 router.post("/save/info", checkAuth, savePersonalInfo);
 router.put("/update/mode", checkAuth, updateUserMode);
-router.get("/list/projects", checkAuth, listUsersProjects);
 
-// providers
+
+// freelancer
 router.get("/list/bids", checkAuth, checkRole("freelancer"), listUserBids);
+router.get("/freelancer/list/projects", checkAuth, checkRole("freelancer"), listFreelancerAssignedProjects);
 
 // clients
+router.get("/client/list/projects", checkAuth, checkRole("client"), listUsersProjects);
 
 
 export default router;

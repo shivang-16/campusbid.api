@@ -131,8 +131,13 @@ export const listUserBids = async(req: Request, res: Response, next: NextFunctio
       const query: any = {user: req.user._id}
       
       if(status) query.status = status
+      
+      console.log(query)
 
-      const bids = await Bid.find(query)
+      const bids = await Bid.find(query).populate({
+        path: "projectId",  
+        select: "title _id", 
+    })
       
       res.status(200).json({
         success: true,
@@ -148,16 +153,49 @@ export const listUsersProjects = async(req: Request, res: Response, next: NextFu
   try {
     const { status } = req.query
 
-      const query: any = {user: req.user._id, role: req.user.role}
+      const query: any = {postedBy: req.user._id}
       
       if(status) query.status = status
 
+      console.log(query, "her eis qyer", req.user._id)
+
       const projects = await Project.find(query)
       
+      console.log(projects, "here")
       res.status(200).json({
         success: true,
         projects
-      })  } catch (error) {
+      })  
+    
+    } catch (error) {
     next(new CustomError((error as Error).message))
   }
 }
+
+// this controller is for freelancer route
+export const listFreelancerAssignedProjects = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { status } = req.query;
+
+    // Find all bids by the user
+    const bids = await Bid.find({ user: req.user._id });
+
+    // Extract project IDs from the bids
+    const projectIds = bids.map(bid => bid.projectId);
+
+    // Find projects based on the extracted project IDs and optional status
+    const query: any = { _id: { $in: projectIds } };
+    if (status) {
+      query.status = status;
+    }
+
+    const projects = await Project.find(query);
+
+    res.status(200).json({
+      success: true,
+      projects
+    });
+  } catch (error) {
+    next(new CustomError((error as Error).message));
+  }
+};

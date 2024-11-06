@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listUsersProjects = exports.listUserBids = exports.updateUserMode = exports.savePersonalInfo = void 0;
+exports.listFreelancerAssignedProjects = exports.listUsersProjects = exports.listUserBids = exports.updateUserMode = exports.savePersonalInfo = void 0;
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const error_1 = require("../../middlewares/error");
 const processDouments_1 = require("../../helpers/processDouments");
@@ -113,7 +113,11 @@ const listUserBids = async (req, res, next) => {
         const query = { user: req.user._id };
         if (status)
             query.status = status;
-        const bids = await bidModel_1.default.find(query);
+        console.log(query);
+        const bids = await bidModel_1.default.find(query).populate({
+            path: "projectId",
+            select: "title _id",
+        });
         res.status(200).json({
             success: true,
             bids
@@ -127,10 +131,12 @@ exports.listUserBids = listUserBids;
 const listUsersProjects = async (req, res, next) => {
     try {
         const { status } = req.query;
-        const query = { user: req.user._id, role: req.user.role };
+        const query = { postedBy: req.user._id };
         if (status)
             query.status = status;
+        console.log(query, "her eis qyer", req.user._id);
         const projects = await projectModel_1.default.find(query);
+        console.log(projects, "here");
         res.status(200).json({
             success: true,
             projects
@@ -141,3 +147,27 @@ const listUsersProjects = async (req, res, next) => {
     }
 };
 exports.listUsersProjects = listUsersProjects;
+// this controller is for freelancer route
+const listFreelancerAssignedProjects = async (req, res, next) => {
+    try {
+        const { status } = req.query;
+        // Find all bids by the user
+        const bids = await bidModel_1.default.find({ user: req.user._id });
+        // Extract project IDs from the bids
+        const projectIds = bids.map(bid => bid.projectId);
+        // Find projects based on the extracted project IDs and optional status
+        const query = { _id: { $in: projectIds } };
+        if (status) {
+            query.status = status;
+        }
+        const projects = await projectModel_1.default.find(query);
+        res.status(200).json({
+            success: true,
+            projects
+        });
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.listFreelancerAssignedProjects = listFreelancerAssignedProjects;

@@ -93,7 +93,10 @@ const getBid = async (req, res, next) => {
         if (!bidId) {
             return next(new error_1.CustomError("Bid ID is required.", 404));
         }
-        const bid = await bidModel_1.default.findById(bidId);
+        const bid = await bidModel_1.default.findById(bidId).populate({
+            path: "user",
+            select: "name",
+        });
         if (!bid)
             return next(new error_1.CustomError("Bid not exists", 404));
         res.status(200).json({

@@ -9,10 +9,10 @@ export interface IBid extends Document {
     amount: number;                   
     currency: string;         
     proposal: string;                        
-    status: 'pending' | 'accepted' | 'rejected' | 'closed'; 
+    status: 'pending' | 'accepted' | 'rejected' | 'closed' | 'completed'; 
     supportingDocs: ISupportingDoc[]
     deliveredIn: {
-        day: number,
+        days: number,
         date: Date
     }
     createdAt: Date;
@@ -46,7 +46,7 @@ const BidSchema: Schema = new Schema<IBid>({
     supportingDocs: [SupportingDocSchema],
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected', 'closed', 'completed', 'uncompleted'],
+        enum: ['pending', 'accepted', 'rejected', 'closed', 'completed'],
         default: 'pending',
     },
     deliveredIn: {
