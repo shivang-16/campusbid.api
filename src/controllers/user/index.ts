@@ -148,7 +148,7 @@ export const listUsersProjects = async(req: Request, res: Response, next: NextFu
   try {
     const { status } = req.query
 
-      const query: any = {user: req.user._id}
+      const query: any = {user: req.user._id, role: req.user.role}
       
       if(status) query.status = status
 

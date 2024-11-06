@@ -40,6 +40,10 @@ const BidSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
     },
+    currency: {
+        type: String,
+        default: "INR"
+    },
     proposal: {
         type: String,
         required: true,
@@ -51,6 +55,10 @@ const BidSchema = new mongoose_1.Schema({
         enum: ['pending', 'accepted', 'rejected', 'closed', 'completed', 'uncompleted'],
         default: 'pending',
     },
+    deliveredIn: {
+        days: Number,
+        date: Date
+    }
 }, { timestamps: true });
 BidSchema.index({ user: 1, projectId: 1 }, { unique: true });
 const Bid = mongoose_1.default.model('Bid', BidSchema);

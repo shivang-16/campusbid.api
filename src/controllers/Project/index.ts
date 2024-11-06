@@ -100,7 +100,15 @@ export const getProjectById = async(req: Request, res: Response, next: NextFunct
         const {projectId} = req.params
         if(!projectId) return next(new CustomError("ProjectId required", 400))
 
-        const project = await Project.findById(projectId).populate("postedBy") 
+        const project = await Project.findById(projectId).populate("postedBy").populate({
+            path: "bids",  // Populate the bids array
+            select: "user amount currency status deliveredIn",  // Only select specific fields in bids
+            populate: {
+                path: "user",  // Populate the user inside each bid
+                select: "name",  // Only select the 'name' field of user
+            },
+        });
+
         if(!project) return next(new CustomError("Project not exists", 404))
 
         res.status(200).json({
@@ -206,6 +214,10 @@ export const fetchAssignedBid = async(req: Request, res: Response, next: NextFun
     } catch (error) {
         next(new CustomError((error as Error).message));
     }
+}
+
+export const getProjectsBid = async(req: Request, res: Response, next: NextFunction) => {
+
 }
 
 export const updateProjectStatus = async(req: Request, res: Response, next: NextFunction) => {

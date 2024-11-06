@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth";
 import googleRoutes from "./routes/googleAuth";
 import userRoutes from "./routes/user";
 import projectRoutes from "./routes/project";
+import bidRoutes from "./routes/bid";
 import dataRoutes from "./routes/data";
 
 
@@ -62,6 +63,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/google", googleRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/project", projectRoutes);
+app.use("/api/bid", bidRoutes);
 app.use("/api/data", dataRoutes);
 
 app.get('/', (req, res) => {

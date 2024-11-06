@@ -11,8 +11,8 @@ const router = express_1.default.Router();
 // all
 router.post("/save/info", checkAuth_1.checkAuth, user_1.savePersonalInfo);
 router.put("/update/mode", checkAuth_1.checkAuth, user_1.updateUserMode);
+router.get("/list/projects", checkAuth_1.checkAuth, user_1.listUsersProjects);
 // providers
 router.get("/list/bids", checkAuth_1.checkAuth, (0, checkRole_1.default)("freelancer"), user_1.listUserBids);
 // clients
-router.get("/list/projects", checkAuth_1.checkAuth, (0, checkRole_1.default)("client"), user_1.listUsersProjects);
 exports.default = router;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProjectStatus = exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.getProjectById = exports.updateSupportingDocs = exports.createProject = void 0;
+exports.updateProjectStatus = exports.getProjectsBid = exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.getProjectById = exports.updateSupportingDocs = exports.createProject = void 0;
 const error_1 = require("../../middlewares/error");
 const projectModel_1 = __importDefault(require("../../models/projectModel"));
 const processDouments_1 = require("../../helpers/processDouments");
@@ -94,7 +94,14 @@ const getProjectById = async (req, res, next) => {
         const { projectId } = req.params;
         if (!projectId)
             return next(new error_1.CustomError("ProjectId required", 400));
-        const project = await projectModel_1.default.findById(projectId).populate("postedBy");
+        const project = await projectModel_1.default.findById(projectId).populate("postedBy").populate({
+            path: "bids", // Populate the bids array
+            select: "user amount currency status deliveredIn", // Only select specific fields in bids
+            populate: {
+                path: "user", // Populate the user inside each bid
+                select: "name", // Only select the 'name' field of user
+            },
+        });
         if (!project)
             return next(new error_1.CustomError("Project not exists", 404));
         res.status(200).json({
@@ -191,6 +198,9 @@ const fetchAssignedBid = async (req, res, next) => {
     }
 };
 exports.fetchAssignedBid = fetchAssignedBid;
+const getProjectsBid = async (req, res, next) => {
+};
+exports.getProjectsBid = getProjectsBid;
 const updateProjectStatus = async (req, res, next) => {
     try {
         const { status } = req.query;

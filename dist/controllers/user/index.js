@@ -127,7 +127,7 @@ exports.listUserBids = listUserBids;
 const listUsersProjects = async (req, res, next) => {
     try {
         const { status } = req.query;
-        const query = { user: req.user._id };
+        const query = { user: req.user._id, role: req.user.role };
         if (status)
             query.status = status;
         const projects = await projectModel_1.default.find(query);

@@ -38,6 +38,7 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const googleAuth_1 = __importDefault(require("./routes/googleAuth"));
 const user_1 = __importDefault(require("./routes/user"));
 const project_1 = __importDefault(require("./routes/project"));
+const bid_1 = __importDefault(require("./routes/bid"));
 const data_1 = __importDefault(require("./routes/data"));
 (0, dotenv_1.config)({
     path: "./.env",
@@ -74,6 +75,7 @@ exports.app.use("/api/auth", auth_1.default);
 exports.app.use("/api/google", googleAuth_1.default);
 exports.app.use("/api/user", user_1.default);
 exports.app.use("/api/project", project_1.default);
+exports.app.use("/api/bid", bid_1.default);
 exports.app.use("/api/data", data_1.default);
 exports.app.get('/', (req, res) => {
     res.send("Welcome to CampusBid Server");

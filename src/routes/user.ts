@@ -13,11 +13,12 @@ const router = express.Router();
 // all
 router.post("/save/info", checkAuth, savePersonalInfo);
 router.put("/update/mode", checkAuth, updateUserMode);
+router.get("/list/projects", checkAuth, listUsersProjects);
 
 // providers
 router.get("/list/bids", checkAuth, checkRole("freelancer"), listUserBids);
 
 // clients
-router.get("/list/projects", checkAuth, checkRole("client"), listUsersProjects);
+
 
 export default router;

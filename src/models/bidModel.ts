@@ -6,10 +6,15 @@ export interface IBid extends Document {
     _id: any; 
     projectId: mongoose.Schema.Types.ObjectId; 
     user: mongoose.Schema.Types.ObjectId;  
-    amount: number;                            
+    amount: number;                   
+    currency: string;         
     proposal: string;                        
     status: 'pending' | 'accepted' | 'rejected' | 'closed'; 
     supportingDocs: ISupportingDoc[]
+    deliveredIn: {
+        day: number,
+        date: Date
+    }
     createdAt: Date;
     updatedAt: Date;
 }
@@ -29,6 +34,10 @@ const BidSchema: Schema = new Schema<IBid>({
         type: Number,
         required: true,
     },
+    currency: {
+        type: String,
+        default: "INR"
+    },
     proposal: {
         type: String,
         required: true,
@@ -40,6 +49,10 @@ const BidSchema: Schema = new Schema<IBid>({
         enum: ['pending', 'accepted', 'rejected', 'closed', 'completed', 'uncompleted'],
         default: 'pending',
     },
+    deliveredIn: {
+        days: Number,
+        date: Date
+    }
 }, { timestamps: true }); 
 
 BidSchema.index({ user: 1, projectId: 1 }, { unique: true })
