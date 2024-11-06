@@ -30,7 +30,7 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
             },
             college: user?.academic.schoolOrCollegeName,
             supportingDocs: docsInfo?.map(doc => ({
-                fileName: doc?.name!,
+                fileName: doc?.fileName!,
                 fileUrl: doc?.getUrl!,
                 key: doc?.key!,
                 ...doc
@@ -74,7 +74,7 @@ export const updateSupportingDocs = async (req: Request, res: Response, next: Ne
             const newDocsInfo = await processDocuments(newSupportingDocs);
             project.supportingDocs.push(
                 ...newDocsInfo.map(doc => ({
-                    fileName: doc?.name!,
+                    fileName: doc?.fileName!,
                     fileUrl: doc?.getUrl!,
                     key: doc?.key!,
                     ...doc

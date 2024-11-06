@@ -36,7 +36,7 @@ const createBid = async (req, res, next) => {
             proposal,
             status: "pending",
             supportingDocs: docsInfo?.map(doc => ({
-                fileName: doc?.name,
+                fileName: doc?.fileName,
                 fileUrl: doc?.getUrl,
                 key: doc?.key,
                 ...doc

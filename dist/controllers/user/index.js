@@ -68,21 +68,27 @@ const savePersonalInfo = async (req, res, next) => {
                 key: avatar?.key
             };
         }
+        let docsInfo;
         if (bodyData.documents) {
-            const docUrls = await (0, processDouments_1.processDocuments)(bodyData.documents);
-            user.documents = docUrls?.map(doc => ({
-                fileName: doc?.name,
+            docsInfo = await (0, processDouments_1.processDocuments)(bodyData.documents);
+            const newDocuments = docsInfo?.map(doc => ({
+                fileName: doc?.fileName,
                 fileUrl: doc?.getUrl,
                 fileSize: doc?.fileSize,
                 fileType: doc?.fileType,
                 key: doc?.key
             }));
+            // Retrieve existing documents
+            const existingDocuments = user.documents || [];
+            // Merge existing and new documents
+            user.documents = [...existingDocuments, ...newDocuments];
         }
         user.updatedAt = new Date();
         await user.save();
         res.status(200).json({
             message: "Personal information updated successfully",
             user,
+            signedUrls: docsInfo?.map(doc => doc?.putUrl)
         });
     }
     catch (error) {

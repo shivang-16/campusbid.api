@@ -33,7 +33,7 @@ const createProject = async (req, res, next) => {
             },
             college: user?.academic.schoolOrCollegeName,
             supportingDocs: docsInfo?.map(doc => ({
-                fileName: doc?.name,
+                fileName: doc?.fileName,
                 fileUrl: doc?.getUrl,
                 key: doc?.key,
                 ...doc
@@ -70,7 +70,7 @@ const updateSupportingDocs = async (req, res, next) => {
         if (newSupportingDocs && newSupportingDocs.length > 0) {
             const newDocsInfo = await (0, processDouments_1.processDocuments)(newSupportingDocs);
             project.supportingDocs.push(...newDocsInfo.map(doc => ({
-                fileName: doc?.name,
+                fileName: doc?.fileName,
                 fileUrl: doc?.getUrl,
                 key: doc?.key,
                 ...doc
