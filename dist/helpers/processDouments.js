@@ -9,7 +9,7 @@ const processDocuments = async (docs) => {
     return await Promise.all(docs.map(async (doc) => {
         if (doc === null)
             return;
-        const bucketKey = `docs/${new Date().getTime()}-${doc.name}`;
+        const bucketKey = `docs/${new Date().getTime()}-${doc.fileName}`;
         const putObjectInfo = {
             Bucket: process.env.CAMPUSBID_S3_BUCKET_NAME,
             Key: bucketKey,
