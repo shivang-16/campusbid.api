@@ -9,10 +9,11 @@ const bidModel_1 = __importDefault(require("../../models/bidModel"));
 const projectModel_1 = __importDefault(require("../../models/projectModel")); // Assuming Project model is available
 const processDouments_1 = require("../../helpers/processDouments");
 const sendMail_1 = require("../../utils/sendMail");
+const mongoose_1 = __importDefault(require("mongoose"));
 const createBid = async (req, res, next) => {
     try {
-        const { projectId, amount, proposal, supportingDocs } = req.body;
-        const user = req.user._id; // Assuming the user ID is attached by authentication middleware
+        const { projectId, amount, proposal, days, supportingDocs } = req.body;
+        const user = req.user._id;
         // Validate required fields
         if (!projectId || !amount || !proposal) {
             return next(new error_1.CustomError("Project ID, amount, and proposal are required.", 404));
@@ -23,7 +24,7 @@ const createBid = async (req, res, next) => {
             return next(new error_1.CustomError("Project not found.", 404));
         }
         // Check if the user has already placed a bid on this project
-        const existingBid = await bidModel_1.default.findOne({ projectId, user });
+        const existingBid = await bidModel_1.default.findOne({ projectId: new mongoose_1.default.Types.ObjectId(projectId), user });
         if (existingBid) {
             return next(new error_1.CustomError("You have already placed a bid on this project.", 400));
         }
@@ -35,6 +36,7 @@ const createBid = async (req, res, next) => {
             amount,
             proposal,
             status: "pending",
+            "deliveredIn.days": days,
             supportingDocs: docsInfo?.map(doc => ({
                 fileName: doc?.fileName,
                 fileUrl: doc?.getUrl,

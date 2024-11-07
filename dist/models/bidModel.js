@@ -57,9 +57,29 @@ const BidSchema = new mongoose_1.Schema({
     },
     deliveredIn: {
         days: Number,
-        date: Date
+        date: Date,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
 }, { timestamps: true });
+BidSchema.pre('save', function (next) {
+    this.updatedAt = new Date();
+    next();
+});
+BidSchema.pre('save', function (next) {
+    if (this.isModified('deliveredIn.days')) {
+        const today = new Date();
+        this.deliveredIn.date = new Date(today.setDate(today.getDate() + this.deliveredIn.days));
+    }
+    next();
+});
+// Unique index on user and projectId
 BidSchema.index({ user: 1, projectId: 1 }, { unique: true });
 const Bid = mongoose_1.default.model('Bid', BidSchema);
 exports.default = Bid;

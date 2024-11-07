@@ -4,11 +4,12 @@ import Bid from "../../models/bidModel";
 import Project from "../../models/projectModel"; // Assuming Project model is available
 import { processDocuments } from "../../helpers/processDouments";
 import { sendMail } from "../../utils/sendMail";
+import mongoose from "mongoose";
 
 export const createBid = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { projectId, amount, proposal, supportingDocs } = req.body;
-        const user = req.user._id; // Assuming the user ID is attached by authentication middleware
+        const { projectId, amount, proposal, days, supportingDocs } = req.body;
+        const user = req.user._id; 
 
         // Validate required fields
         if (!projectId || !amount || !proposal) {
@@ -22,7 +23,7 @@ export const createBid = async (req: Request, res: Response, next: NextFunction)
         }
 
         // Check if the user has already placed a bid on this project
-        const existingBid = await Bid.findOne({ projectId, user });
+        const existingBid = await Bid.findOne({ projectId: new mongoose.Types.ObjectId(projectId), user });
         if (existingBid) {
             return next(new CustomError("You have already placed a bid on this project.", 400))
         }
@@ -36,6 +37,7 @@ export const createBid = async (req: Request, res: Response, next: NextFunction)
             amount,
             proposal,
             status: "pending",
+            "deliveredIn.days": days, 
             supportingDocs: docsInfo?.map(doc => ({
                 fileName: doc?.fileName!,
                 fileUrl: doc?.getUrl!,
