@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchColleges = exports.searchStates = exports.searchCities = void 0;
+exports.getOptions = exports.searchColleges = exports.searchStates = exports.searchCities = void 0;
 const db_1 = require("../../db/db");
+const error_1 = require("../../middlewares/error");
+const optionsetModel_1 = require("../../models/optionsetModel");
 // Search for Cities
 const searchCities = async (req, res, next) => {
     const searchTerm = req.query.q?.toString().trim() || "";
@@ -22,7 +24,7 @@ const searchCities = async (req, res, next) => {
         });
     }
     catch (error) {
-        next(error);
+        next(new error_1.CustomError(error.message));
     }
 };
 exports.searchCities = searchCities;
@@ -43,7 +45,7 @@ const searchStates = async (req, res, next) => {
         });
     }
     catch (error) {
-        next(error);
+        next(new error_1.CustomError(error.message));
     }
 };
 exports.searchStates = searchStates;
@@ -64,7 +66,26 @@ const searchColleges = async (req, res, next) => {
         });
     }
     catch (error) {
-        next(error);
+        next(new error_1.CustomError(error.message));
     }
 };
 exports.searchColleges = searchColleges;
+const getOptions = async (req, res, next) => {
+    try {
+        const { option, type } = req.query;
+        if (!option)
+            next(new error_1.CustomError("Option parameter is required in query", 400));
+        const query = { option };
+        if (type)
+            query.type = type;
+        const options = await optionsetModel_1.Optionset.find(query);
+        res.status(200).json({
+            success: true,
+            options
+        });
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.getOptions = getOptions;

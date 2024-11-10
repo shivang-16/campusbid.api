@@ -48,9 +48,10 @@ const ProjectSchema = new Schema({
             ref: 'Bid',
         },
     ],
-    category: {
-        type: String,
-    },
+    categories: [{
+            type: String,
+            trim: true,
+        }],
     skillsRequired: [
         {
             type: String,

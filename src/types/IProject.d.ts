@@ -34,7 +34,7 @@ export interface IProject extends Document {
   assignedBid: mongoose.Types.ObjectId
   postedBy: ObjectId; // Reference to the User who created the project
   bids: Bids[]; // Array of bids
-  category: 'writing' | 'design' | 'development' | 'data-entry' | 'marketing';
+  categories: string[];
   skillsRequired: string[];
   supportingDocs: ISupportingDoc[]; // Array of supporting documents
   college: ICollege,

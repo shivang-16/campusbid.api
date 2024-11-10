@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { db } from "../../db/db";
+import { CustomError } from "../../middlewares/error";
+import { Optionset } from "../../models/optionsetModel";
 
 // Search for Cities
 export const searchCities = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,7 +28,7 @@ export const searchCities = async (req: Request, res: Response, next: NextFuncti
             data: cities,
         });
     } catch (error) {
-        next(error);
+        next(new CustomError((error as Error).message));
     }
 };
 
@@ -50,7 +52,7 @@ export const searchStates = async (req: Request, res: Response, next: NextFuncti
             data: states,
         });
     } catch (error) {
-        next(error);
+        next(new CustomError((error as Error).message));
     }
 };
 
@@ -71,7 +73,26 @@ export const searchColleges = async (req: Request, res: Response, next: NextFunc
             data: colleges,
         });
     } catch (error) {
-        next(error);
+        next(new CustomError((error as Error).message));
     }
 };
 
+export const getOptions = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { option, type } = req.query
+        if(!option) next(new CustomError("Option parameter is required in query", 400));
+
+        const query: any = {option}
+        if( type ) query.type = type
+
+        const options = await Optionset.find(query)
+
+        res.status(200).json({
+            success: true,
+            options
+        })
+
+    } catch (error) {
+        next(new CustomError((error as Error).message));
+    }
+}

@@ -10,4 +10,5 @@ const router = express_1.default.Router();
 router.get("/cities/get", checkAuth_1.checkAuth, data_1.searchCities);
 router.get("/states/get", checkAuth_1.checkAuth, data_1.searchStates);
 router.get("/colleges/get", checkAuth_1.checkAuth, data_1.searchColleges);
+router.get("/options/get", checkAuth_1.checkAuth, data_1.getOptions);
 exports.default = router;

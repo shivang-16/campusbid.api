@@ -23,3 +23,9 @@ export interface ICollege {
   StateCode: string,
   Stream: string,
 }
+
+export interface IOptionset {
+  option: string,
+  type: string,
+  values: string[]
+}

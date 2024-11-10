@@ -12,7 +12,7 @@ const bidModel_1 = __importDefault(require("../../models/bidModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const createProject = async (req, res, next) => {
     try {
-        const { title, description, budget, deadline, category, skillsRequired, supportingDocs } = req.body;
+        const { title, description, budget, deadline, categories, skillsRequired, supportingDocs } = req.body;
         const postedBy = req.user._id; // Assuming user ID is attached to the request (e.g., from middleware)
         const user = await userModel_1.default.findById(req.user._id);
         if (!user)
@@ -24,7 +24,7 @@ const createProject = async (req, res, next) => {
             description,
             budget,
             deadline,
-            category,
+            categories,
             skillsRequired,
             postedBy,
             location: {

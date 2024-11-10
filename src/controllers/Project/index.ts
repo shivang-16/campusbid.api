@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 
 export const createProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { title, description, budget, deadline, category, skillsRequired, supportingDocs } = req.body;
+        const { title, description, budget, deadline, categories, skillsRequired, supportingDocs } = req.body;
         const postedBy = req.user._id; // Assuming user ID is attached to the request (e.g., from middleware)
         const user = await User.findById(req.user._id)
         if(!user) next(new CustomError("User not exists", 404))
@@ -21,7 +21,7 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
             description,
             budget,
             deadline,
-            category,
+            categories,
             skillsRequired,
             postedBy,
             location: {
