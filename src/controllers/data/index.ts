@@ -79,18 +79,29 @@ export const searchColleges = async (req: Request, res: Response, next: NextFunc
 
 export const getOptions = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { option, type } = req.query
-        if(!option) next(new CustomError("Option parameter is required in query", 400));
+        const { option, type } = req.query;
+        const searchTerm = req.query.q?.toString().trim() || "";
 
-        const query: any = {option}
-        if( type ) query.type = type
+        if (!option) return next(new CustomError("Option parameter is required in query", 400));
 
-        const options = await Optionset.find(query)
+        const query: any = { option };
+        if (type) query.type = type;
+
+        // If a searchTerm is provided, use it to filter the options
+        if (searchTerm) {
+            const regex = new RegExp(searchTerm, "i");
+            query.$or = [
+                { option: { $regex: regex } },
+                { type: { $regex: regex } }
+            ];
+        }
+
+        const options = await Optionset.find(query).limit(50);
 
         res.status(200).json({
             success: true,
             options
-        })
+        });
 
     } catch (error) {
         next(new CustomError((error as Error).message));

@@ -73,12 +73,21 @@ exports.searchColleges = searchColleges;
 const getOptions = async (req, res, next) => {
     try {
         const { option, type } = req.query;
+        const searchTerm = req.query.q?.toString().trim() || "";
         if (!option)
-            next(new error_1.CustomError("Option parameter is required in query", 400));
+            return next(new error_1.CustomError("Option parameter is required in query", 400));
         const query = { option };
         if (type)
             query.type = type;
-        const options = await optionsetModel_1.Optionset.find(query);
+        // If a searchTerm is provided, use it to filter the options
+        if (searchTerm) {
+            const regex = new RegExp(searchTerm, "i");
+            query.$or = [
+                { option: { $regex: regex } },
+                { type: { $regex: regex } }
+            ];
+        }
+        const options = await optionsetModel_1.Optionset.find(query).limit(50);
         res.status(200).json({
             success: true,
             options

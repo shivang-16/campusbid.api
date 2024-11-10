@@ -21,7 +21,7 @@ const ProjectSchema = new Schema<IProject>(
     budget: {
       min: { type: Number, required: true },
       max: { type: Number, required: true },
-      currency: { type: String, required: true, default: "INR"}
+      currency: { type: String, default: "INR"}
     },
     deadline: {
       type: Schema.Types.Mixed, 
