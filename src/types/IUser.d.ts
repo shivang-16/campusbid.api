@@ -1,4 +1,4 @@
-import { Document, ObjectId } from "mongoose";
+import mongoose, { Document, ObjectId } from "mongoose";
 import { ISupportingDoc } from "./IProject";
 import { ICity, ICollege, IState } from "./IData";
 

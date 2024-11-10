@@ -105,7 +105,7 @@ const getProjectById = async (req, res, next) => {
         if (!project)
             return next(new error_1.CustomError("Project not exists", 404));
         // Check if the user is a client and if they are trying to access their own project
-        if (req.user.role === "client" && project.postedBy.toString() !== req.user.id) {
+        if (req.user.role === "client" && project.postedBy._id.toString() !== req.user._id.toString()) {
             return next(new error_1.CustomError("Access denied. You can only access your own projects.", 403));
         }
         res.status(200).json({

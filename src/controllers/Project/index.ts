@@ -107,12 +107,12 @@ export const getProjectById = async(req: Request, res: Response, next: NextFunct
                 path: "user",  // Populate the user inside each bid
                 select: "name",  // Only select the 'name' field of user
             },
-        });
+        }) as any;
 
         if (!project) return next(new CustomError("Project not exists", 404));
 
         // Check if the user is a client and if they are trying to access their own project
-        if (req.user.role === "client" && project.postedBy.toString() !== req.user.id) {
+        if (req.user.role === "client" && project.postedBy._id.toString() !== req.user._id.toString()) {
             return next(new CustomError("Access denied. You can only access your own projects.", 403));
         }
 

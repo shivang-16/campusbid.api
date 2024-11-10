@@ -1,6 +1,7 @@
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { ICity, ICollege } from './IData';
 import { IState } from 'country-state-city';
+import IUser from './IUser';
 
 // Supporting Document Interface
 export interface ISupportingDoc {
@@ -32,7 +33,7 @@ export interface IProject extends Document {
   deadline: Date;
   status: 'open' | 'in_progress' | 'completed' | 'closed';
   assignedBid: mongoose.Types.ObjectId
-  postedBy: ObjectId; // Reference to the User who created the project
+  postedBy: ObjectId | IUser; // Reference to the User who created the project
   bids: Bids[]; // Array of bids
   categories: string[];
   skillsRequired: string[];
