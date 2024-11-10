@@ -10,6 +10,10 @@ const optionsetSchema = new mongoose_1.default.Schema({
         type: String,
         required: true
     },
+    tag: {
+        type: String,
+        default: 'general'
+    },
     type: {
         type: String,
         required: true

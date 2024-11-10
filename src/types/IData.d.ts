@@ -27,5 +27,6 @@ export interface ICollege {
 export interface IOptionset {
   option: string,
   type: string,
+  tag: string,
   values: string[]
 }

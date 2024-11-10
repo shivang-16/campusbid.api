@@ -97,8 +97,8 @@ export const updateSupportingDocs = async (req: Request, res: Response, next: Ne
 
 export const getProjectById = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const {projectId} = req.params
-        if(!projectId) return next(new CustomError("ProjectId required", 400))
+        const { projectId } = req.params;
+        if (!projectId) return next(new CustomError("ProjectId required", 400));
 
         const project = await Project.findById(projectId).populate("postedBy").populate({
             path: "bids",  // Populate the bids array
@@ -109,12 +109,17 @@ export const getProjectById = async(req: Request, res: Response, next: NextFunct
             },
         });
 
-        if(!project) return next(new CustomError("Project not exists", 404))
+        if (!project) return next(new CustomError("Project not exists", 404));
+
+        // Check if the user is a client and if they are trying to access their own project
+        if (req.user.role === "client" && project.postedBy.toString() !== req.user.id) {
+            return next(new CustomError("Access denied. You can only access your own projects.", 403));
+        }
 
         res.status(200).json({
             success: true,
             project
-        })    
+        });
 
     } catch (error) {
         next(new CustomError((error as Error).message));
