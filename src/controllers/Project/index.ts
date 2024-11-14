@@ -6,6 +6,8 @@ import { processDocuments } from "../../helpers/processDouments";
 import User from "../../models/userModel";
 import Bid from "../../models/bidModel";
 import mongoose from "mongoose";
+import { NotificationOptions, sendNotification } from "../../helpers/sendNotification";
+import { EmailOptions } from "../../utils/sendMail";
 
 export const createProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -181,6 +183,8 @@ export const assignBidToProject = async(req: Request, res: Response, next: NextF
         const bidId = new mongoose.Types.ObjectId(req.query.bidId as string) ; 
         const projectId = new mongoose.Types.ObjectId(req.query.projectId as string);
 
+        if (!projectId || !bidId) return next(new CustomError("ProjectId and BidId are required"));
+
         const project = await Project.findOne({ bids: bidId });
         if (!project) return next(new CustomError("Project not exists", 400));
 
@@ -203,6 +207,24 @@ export const assignBidToProject = async(req: Request, res: Response, next: NextF
         await bid.save()
         await project.save(); 
 
+        const notification: NotificationOptions = {
+            senderId: req.user._id,
+            receiverId: bid.user,
+            message: "Bid Assigned",
+            projectId: projectId.toString(),
+            bidId: bidId.toString()
+        }
+
+        const bidUser = await User.findById(bid.user)
+        if(!bidUser) return next(new CustomError("User not exists", 500))
+
+        const email: EmailOptions = {
+            email: bidUser.email,
+            subject: "Bid assigned succesfully",
+            message: `Your bid is assigned to project ${projectId}`
+        }
+
+        await sendNotification(notification, email)
 
         res.status(200).json({ success: true, message: "Bidder assigned to project successfully" });
     } catch (error) {
@@ -230,9 +252,6 @@ export const fetchAssignedBid = async(req: Request, res: Response, next: NextFun
     }
 }
 
-export const getProjectsBid = async(req: Request, res: Response, next: NextFunction) => {
-
-}
 
 export const updateProjectStatus = async(req: Request, res: Response, next: NextFunction) => {
    try {

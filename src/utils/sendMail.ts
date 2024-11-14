@@ -1,14 +1,14 @@
 import nodemailer from "nodemailer";
 import { getTemplate } from "./getMailTemplates";
 
-export type Options = {
+export type EmailOptions = {
   email: string;
   subject: string;
   message: string;
   username?: string;
   tag?: string
 };
-export const sendMail = async (options: Options) => {
+export const sendMail = async (options: EmailOptions) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,

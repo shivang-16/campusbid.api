@@ -8,8 +8,9 @@ const error_1 = require("../../middlewares/error");
 const bidModel_1 = __importDefault(require("../../models/bidModel"));
 const projectModel_1 = __importDefault(require("../../models/projectModel")); // Assuming Project model is available
 const processDouments_1 = require("../../helpers/processDouments");
-const sendMail_1 = require("../../utils/sendMail");
 const mongoose_1 = __importDefault(require("mongoose"));
+const userModel_1 = __importDefault(require("../../models/userModel"));
+const sendNotification_1 = require("../../helpers/sendNotification");
 const createBid = async (req, res, next) => {
     try {
         const { projectId, amount, proposal, days, supportingDocs } = req.body;
@@ -51,16 +52,22 @@ const createBid = async (req, res, next) => {
         await newBid.save();
         projectExists?.bids.push(newBid);
         await projectExists?.save();
-        try {
-            await (0, sendMail_1.sendMail)({
-                email: req.user.email,
-                subject: `Application sent for ${projectExists.title}`,
-                message: projectExists.title,
-            });
-        }
-        catch (error) {
-            console.log(error);
-        }
+        const notification = {
+            senderId: req.user._id,
+            receiverId: projectExists.postedBy.toString(),
+            message: "New Bid",
+            projectId: projectId.toString(),
+            bidId: newBid._id.toString()
+        };
+        const projectUser = await userModel_1.default.findById(projectExists.postedBy);
+        if (!projectUser)
+            return next(new error_1.CustomError("User not exists", 500));
+        const email = {
+            email: projectUser.email,
+            subject: "A new bid in your project",
+            message: `A user has bid in your project ${newBid._id}`
+        };
+        await (0, sendNotification_1.sendNotification)(notification, email);
         res.status(201).json({
             success: true,
             message: "Bid created successfully",

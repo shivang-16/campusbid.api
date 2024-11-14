@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProjectStatus = exports.getProjectsBid = exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.getProjectById = exports.updateSupportingDocs = exports.createProject = void 0;
+exports.updateProjectStatus = exports.fetchAssignedBid = exports.assignBidToProject = exports.getProjectsListing = exports.getProjectById = exports.updateSupportingDocs = exports.createProject = void 0;
 const error_1 = require("../../middlewares/error");
 const projectModel_1 = __importDefault(require("../../models/projectModel"));
 const processDouments_1 = require("../../helpers/processDouments");
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const bidModel_1 = __importDefault(require("../../models/bidModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const sendNotification_1 = require("../../helpers/sendNotification");
 const createProject = async (req, res, next) => {
     try {
         const { title, description, budget, deadline, categories, skillsRequired, supportingDocs } = req.body;
@@ -166,6 +167,8 @@ const assignBidToProject = async (req, res, next) => {
     try {
         const bidId = new mongoose_1.default.Types.ObjectId(req.query.bidId);
         const projectId = new mongoose_1.default.Types.ObjectId(req.query.projectId);
+        if (!projectId || !bidId)
+            return next(new error_1.CustomError("ProjectId and BidId are required"));
         const project = await projectModel_1.default.findOne({ bids: bidId });
         if (!project)
             return next(new error_1.CustomError("Project not exists", 400));
@@ -185,6 +188,22 @@ const assignBidToProject = async (req, res, next) => {
         }
         await bid.save();
         await project.save();
+        const notification = {
+            senderId: req.user._id,
+            receiverId: bid.user,
+            message: "Bid Assigned",
+            projectId: projectId.toString(),
+            bidId: bidId.toString()
+        };
+        const bidUser = await userModel_1.default.findById(bid.user);
+        if (!bidUser)
+            return next(new error_1.CustomError("User not exists", 500));
+        const email = {
+            email: bidUser.email,
+            subject: "Bid assigned succesfully",
+            message: `Your bid is assigned to project ${projectId}`
+        };
+        await (0, sendNotification_1.sendNotification)(notification, email);
         res.status(200).json({ success: true, message: "Bidder assigned to project successfully" });
     }
     catch (error) {
@@ -211,9 +230,6 @@ const fetchAssignedBid = async (req, res, next) => {
     }
 };
 exports.fetchAssignedBid = fetchAssignedBid;
-const getProjectsBid = async (req, res, next) => {
-};
-exports.getProjectsBid = getProjectsBid;
 const updateProjectStatus = async (req, res, next) => {
     try {
         const { status } = req.query;
