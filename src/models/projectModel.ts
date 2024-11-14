@@ -50,11 +50,13 @@ const ProjectSchema = new Schema<IProject>(
     categories: [{
       type: String,
       trim: true,
+      ref: "Optionset"
     }],
     skillsRequired: [
       {
         type: String,
         trim: true,
+        ref: "Optionset"
       },
     ],
     supportingDocs: [SupportingDocSchema], // Array of supporting documents

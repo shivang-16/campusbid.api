@@ -51,11 +51,13 @@ const ProjectSchema = new Schema({
     categories: [{
             type: String,
             trim: true,
+            ref: "Optionset"
         }],
     skillsRequired: [
         {
             type: String,
             trim: true,
+            ref: "Optionset"
         },
     ],
     supportingDocs: [supportingDocModel_1.SupportingDocSchema], // Array of supporting documents

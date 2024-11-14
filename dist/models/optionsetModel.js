@@ -18,9 +18,9 @@ const optionsetSchema = new mongoose_1.default.Schema({
         type: String,
         required: true
     },
-    values: [{
-            type: String,
-            required: true
-        }]
+    value: {
+        type: String,
+        required: true
+    }
 });
 exports.Optionset = mongoose_1.default.model('Optionset', optionsetSchema);

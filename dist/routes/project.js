@@ -11,7 +11,7 @@ const router = express_1.default.Router();
 // client routes
 router.post("/create", checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.createProject);
 router.put('/update/docs', checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.updateSupportingDocs);
-router.get("/assign", checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.assignBidToProject);
+router.get("/assign/bid", checkAuth_1.checkAuth, (0, checkRole_1.default)('client'), Project_1.assignBidToProject);
 // provider routes
 router.get("/get", checkAuth_1.checkAuth, (0, checkRole_1.default)('freelancer'), Project_1.getProjectsListing);
 // all

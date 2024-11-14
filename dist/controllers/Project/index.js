@@ -94,13 +94,20 @@ const getProjectById = async (req, res, next) => {
         const { projectId } = req.params;
         if (!projectId)
             return next(new error_1.CustomError("ProjectId required", 400));
-        const project = await projectModel_1.default.findById(projectId).populate("postedBy").populate({
+        const project = await projectModel_1.default.findById(projectId).populate("postedBy skillsRequired categories").populate({
             path: "bids", // Populate the bids array
-            select: "user amount currency status deliveredIn", // Only select specific fields in bids
+            select: "user proposal amount currency status deliveredIn supportingDocs", // Only select specific fields in bids
             populate: {
                 path: "user", // Populate the user inside each bid
                 select: "name", // Only select the 'name' field of user
             },
+        }).populate({
+            path: "assignedBid", // Populate the assignedBid field
+            select: "user proposal amount currency status deliveredIn supportingDocs", // Only select specific fields in assignedBid
+            populate: {
+                path: "user", // Populate the user inside assignedBid
+                select: "name", // Only select the 'name' field of user
+            }
         });
         if (!project)
             return next(new error_1.CustomError("Project not exists", 404));
@@ -114,6 +121,7 @@ const getProjectById = async (req, res, next) => {
         });
     }
     catch (error) {
+        console.log(error);
         next(new error_1.CustomError(error.message));
     }
 };
@@ -132,12 +140,13 @@ const getProjectsListing = async (req, res, next) => {
         // Distance in meters for nearby projects (e.g., 40km)
         const MAX_DISTANCE = 40000;
         // Find projects from the same college
-        const collegeProjects = await projectModel_1.default.find({ "college.College_Name": schoolOrCollegeName?.College_Name })
+        const collegeProjects = await projectModel_1.default.find({ "college.College_Name": schoolOrCollegeName?.College_Name, postedBy: { $ne: userId } })
             .populate("postedBy", "college location")
             .exec();
         // Find nearby projects by location
         const nearbyProjects = await projectModel_1.default.find({
-            "college.College_Name": { $ne: schoolOrCollegeName?.College_Name }
+            "college.College_Name": { $ne: schoolOrCollegeName?.College_Name },
+            postedBy: { $ne: userId }
         })
             .populate("postedBy", "college location")
             .exec();
@@ -155,9 +164,9 @@ const getProjectsListing = async (req, res, next) => {
 exports.getProjectsListing = getProjectsListing;
 const assignBidToProject = async (req, res, next) => {
     try {
-        const bidId = req.query.bidId;
-        const projectId = req.query.projectId;
-        const project = await projectModel_1.default.findOne({ bid: bidId });
+        const bidId = new mongoose_1.default.Types.ObjectId(req.query.bidId);
+        const projectId = new mongoose_1.default.Types.ObjectId(req.query.projectId);
+        const project = await projectModel_1.default.findOne({ bids: bidId });
         if (!project)
             return next(new error_1.CustomError("Project not exists", 400));
         const bid = await bidModel_1.default.findById(bidId);
@@ -176,7 +185,7 @@ const assignBidToProject = async (req, res, next) => {
         }
         await bid.save();
         await project.save();
-        res.status(200).json({ message: "Bidder assigned to project successfully" });
+        res.status(200).json({ success: true, message: "Bidder assigned to project successfully" });
     }
     catch (error) {
         next(new error_1.CustomError(error.message));

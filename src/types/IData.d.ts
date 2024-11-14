@@ -28,5 +28,5 @@ export interface IOptionset {
   option: string,
   type: string,
   tag: string,
-  values: string[]
+  value: string
 }

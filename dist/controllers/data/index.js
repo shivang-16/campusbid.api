@@ -82,12 +82,10 @@ const getOptions = async (req, res, next) => {
         // If a searchTerm is provided, use it to filter the options
         if (searchTerm) {
             const regex = new RegExp(searchTerm, "i");
-            query.$or = [
-                { option: { $regex: regex } },
-                { type: { $regex: regex } }
-            ];
+            query.value = regex;
         }
         const options = await optionsetModel_1.Optionset.find(query).limit(50);
+        console.log(options.length, "her eis the ");
         res.status(200).json({
             success: true,
             options

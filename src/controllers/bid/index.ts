@@ -22,6 +22,10 @@ export const createBid = async (req: Request, res: Response, next: NextFunction)
             return next(new CustomError("Project not found.", 404))
         }
 
+        if (projectExists.postedBy.toString() === user.toString()) {
+            return next(new CustomError("You cannot place a bid on your own project.", 400));
+        }
+
         // Check if the user has already placed a bid on this project
         const existingBid = await Bid.findOne({ projectId: new mongoose.Types.ObjectId(projectId), user });
         if (existingBid) {
@@ -66,6 +70,7 @@ export const createBid = async (req: Request, res: Response, next: NextFunction)
             success: true,
             message: "Bid created successfully",
             bid: newBid,
+            signedUrls: docsInfo?.map(doc => doc?.putUrl)
         });
     } catch (error) {
         next(new CustomError((error as Error).message));

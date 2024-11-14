@@ -14,10 +14,10 @@ const optionsetSchema = new mongoose.Schema<IOptionset>({
         type: String,
         required: true
     },
-    values: [{
+    value: {
         type: String,
         required: true
-    }]
+    }
 });
 
 export const Optionset = mongoose.model<IOptionset>('Optionset', optionsetSchema);
