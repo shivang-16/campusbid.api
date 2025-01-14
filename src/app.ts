@@ -11,7 +11,7 @@ import userRoutes from "./routes/user";
 import projectRoutes from "./routes/project";
 import bidRoutes from "./routes/bid";
 import dataRoutes from "./routes/data";
-import { saveWaitlist } from './controllers/public';
+import { saveWaitlist, saveWaitlistCampusbid } from './controllers/public';
 
 
 config({
@@ -68,6 +68,7 @@ app.use("/api/bid", bidRoutes);
 app.use("/api/data", dataRoutes);
 
 app.post('/join-waitlist', saveWaitlist as express.RequestHandler);
+app.post('/join-waitlist-campusbid', saveWaitlistCampusbid as express.RequestHandler);
 
 app.get('/', (req, res) => {
     res.send("Welcome to CampusBid Server")
