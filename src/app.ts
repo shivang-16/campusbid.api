@@ -39,7 +39,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
 
-const allowedOrigins = [process.env.FRONTEND_URL!, "http://campusbid.in", "http://localhost:3000"];
+const allowedOrigins = [process.env.FRONTEND_URL!, "https://campusbid.in", "http://localhost:3000"];
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
