@@ -55,7 +55,7 @@ exports.app.use(express_winston_1.default.logger({
 exports.app.use((0, cookie_parser_1.default)());
 exports.app.use(express_1.default.json());
 exports.app.use((0, express_1.urlencoded)({ extended: true }));
-const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3000"];
+const allowedOrigins = [process.env.FRONTEND_URL, "http://campusbid.in", "http://localhost:3000"];
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin)
