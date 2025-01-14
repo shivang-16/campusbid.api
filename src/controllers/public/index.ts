@@ -41,7 +41,7 @@ export const saveWaitlistCampusbid = async(req: Request, res: Response, next: Ne
     }
 
     await collection.insertOne({ email });
-    res.status(201).json({ message: "Email added to the waitlist" });
+    res.status(201).json({ success: true, message: "You are all set to go!" });
 
   } catch (error: any) {
     next(new CustomError(error.message));

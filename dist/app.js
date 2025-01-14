@@ -79,6 +79,7 @@ exports.app.use("/api/project", project_1.default);
 exports.app.use("/api/bid", bid_1.default);
 exports.app.use("/api/data", data_1.default);
 exports.app.post('/join-waitlist', public_1.saveWaitlist);
+exports.app.post('/api/join-waitlist-campusbid', public_1.saveWaitlistCampusbid);
 exports.app.get('/', (req, res) => {
     res.send("Welcome to CampusBid Server");
 });
