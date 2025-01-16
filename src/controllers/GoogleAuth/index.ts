@@ -3,6 +3,7 @@ import axios from "axios";
 import { CustomError } from "../../middlewares/error";
 import User from "../../models/userModel";
 import setCookie from "../../utils/setCookie";
+import { generateUsername } from "../../utils/generateUsername";
 
 export const googleAuth = async (
   req: Request,
@@ -32,6 +33,9 @@ export const googleAuth = async (
 
     if (!email) return next(new CustomError("Email not found", 404));
 
+    const username = await generateUsername()
+    console.log(username, "here is username");
+
     const user = await User.findOne({ email });
     if (user) {
       // If user already exists then log in the user
@@ -46,7 +50,8 @@ export const googleAuth = async (
       // If user not found then create a new user
       const newUser = await User.create({
         name,
-        email
+        email,
+        username
       });
 
       setCookie({

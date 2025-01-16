@@ -22,8 +22,8 @@ const savePersonalInfo = async (req, res, next) => {
         if (bodyData.username) {
             user.username = bodyData.username;
         }
-        if (bodyData.role) {
-            user.role = bodyData.role;
+        if (bodyData.mode) {
+            user.mode = bodyData.mode;
         }
         if (bodyData.dateOfBirth) {
             user.about.dateOfBirth = bodyData.dateOfBirth;

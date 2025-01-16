@@ -8,6 +8,7 @@ const axios_1 = __importDefault(require("axios"));
 const error_1 = require("../../middlewares/error");
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const setCookie_1 = __importDefault(require("../../utils/setCookie"));
+const generateUsername_1 = require("../../utils/generateUsername");
 const googleAuth = async (req, res, next) => {
     try {
         const { access_token } = req.body;
@@ -23,6 +24,8 @@ const googleAuth = async (req, res, next) => {
         const { email, name } = userData;
         if (!email)
             return next(new error_1.CustomError("Email not found", 404));
+        const username = await (0, generateUsername_1.generateUsername)();
+        console.log(username, "here is username");
         const user = await userModel_1.default.findOne({ email });
         if (user) {
             // If user already exists then log in the user
@@ -38,7 +41,8 @@ const googleAuth = async (req, res, next) => {
             // If user not found then create a new user
             const newUser = await userModel_1.default.create({
                 name,
-                email
+                email,
+                username
             });
             (0, setCookie_1.default)({
                 user: newUser,

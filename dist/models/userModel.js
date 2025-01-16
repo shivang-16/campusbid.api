@@ -39,14 +39,10 @@ const userSchema = new mongoose_1.Schema({
     username: {
         type: String,
         unique: true,
+        editLimit: 2,
     },
     email: { type: String, required: true, unique: true, default: null },
-    // role: { type: String, enum: [ 'client' , 'freelancer'  ], default: "freelancer"},
     mode: { type: String, enum: ['public', 'anonymous'], default: "public" },
-    phone: {
-        personal: { type: Number, default: null },
-        other: { type: Number, default: null },
-    },
     address: {
         country: { type: String, default: null },
         city: locationDataModels_1.citySchema,
@@ -93,7 +89,6 @@ const userSchema = new mongoose_1.Schema({
     resetTokenExpiry: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
-    access_list: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }]
 });
 // Pre-save hook for email validation
 userSchema.pre("save", function (next) {
