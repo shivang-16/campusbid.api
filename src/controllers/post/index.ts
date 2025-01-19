@@ -1,22 +1,42 @@
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "../../middlewares/error";
-import { processDocuments } from "../../helpers/processDouments";
+import { processFiles } from "../../helpers/processDouments";
 import Post from "../../models/postModel";
-import Vote from "../../models/voteModel";
+import PostVote from "../../models/postVoteModel";
 
 export const createPost = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { text, media, isComment } = req.body
+        const { text, files, isComment, type } = req.body;
 
-        if (!text || !media) return next(new CustomError(("Text or Media is required")))
-        
-        const mediaInfo = await processDocuments(media)
+        // Validate type
+        if (!['post', 'spill'].includes(type)) {
+            return next(new CustomError("Invalid type. Must be 'post' or 'spill'."));
+        }
 
+        // Validate either text or files along with type
+        if ((!text && !files) || (!type)) {
+            return next(new CustomError("Either 'text' with 'type' or 'files' with 'type' is required."));
+        }
+
+        // If both text and files are absent
+        if (!text && !files) {
+            return next(new CustomError("Both 'text' and 'files' cannot be empty."));
+        }
+
+        // If files are provided, process them
+        let filesInfo = [];
+        if (files) {
+            filesInfo = await processFiles(files);
+        }
+
+        console.log(text, type, "here")
         // Create a new bid
-        const newPost = new Post({
+        const newPost = await Post.create({
             user: req.user._id,
             text,
-            media: mediaInfo?.map(doc => ({
+            isComment,
+            type,
+            files: filesInfo?.map(doc => ({
                 fileName: doc?.fileName!,
                 fileUrl: doc?.getUrl!,
                 key: doc?.key!,
@@ -34,43 +54,84 @@ export const createPost = async (req: Request, res: Response, next: NextFunction
     }
 }
 
-export const votePost = async (req: Request, res: Response, next: NextFunction) => {
+export const getPosts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { postId, userId, type } = req.query
-
-        if (!postId && !userId) {
-            return next(new CustomError("Post ID and User ID is required.", 404));
-        }
-
-        if (type !== "upvote" && type !== "downvote") {
-            return next(new CustomError("Invalid vote type.", 400));
-        }
-
-        await Vote.create({
-            user: userId,
-            post: postId,
-            type: type
-        })
-        
-        const post = await Post.findById(postId)
-        if(!post) return next(new CustomError("Post not exists", 404))
-
-        if (type === "upvote") {
-            post!.analytics.upvotes += 1;
-        } else if (type === "downvote") {
-            post!.analytics.downvotes += 1;
-        } else if (type === "special") {
-            post!.analytics.special += 1;
-        }
-
-        await post!.save()
-
-        res.status(200).json({
+        const posts = await Post.find();
+        res.json({
             success: true,
-            message: `${type} successfully`
+            posts
         })
-        
     } catch (error) {
         next(new CustomError((error as Error).message));
     }
 }
+
+export const votePost = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { postId, userId, type } = req.query as { postId: string, userId: string, type: string };
+
+        if (!postId || !userId) {
+            return next(new CustomError("Post ID and User ID are required.", 404));
+        }
+
+        if (!["upvote", "downvote", "special"].includes(type)) {
+            return next(new CustomError("Invalid vote type.", 400));
+        }
+
+        const existingVote = await PostVote.findOne({ user: userId, post: postId });
+
+        const post = await Post.findById(postId) as any;
+        if (!post) return next(new CustomError("Post does not exist", 404));
+
+        if (existingVote) {
+            if (existingVote.type === type) {
+                // Remove vote if the same type already exists
+                await existingVote.deleteOne();
+                post.analytics[type + 's'] -= 1;
+            } else if (type !== 'special' && existingVote.type !== 'special') {
+                // Change vote type between upvote/downvote
+                post.analytics[existingVote.type + 's'] -= 1;
+                existingVote.type = type as "upvote" | "downvote" | "special";
+                post.analytics[type + 's'] += 1;
+                await existingVote.save();
+            } else {
+                // Handle special vote independently
+                if (type === 'special') {
+                    await PostVote.create({
+                        user: userId,
+                        post: postId,
+                        type: type
+                    });
+                    post.analytics.special += 1;
+                } else {
+                    post.analytics[existingVote.type + 's'] -= 1;
+                    await existingVote.deleteOne();
+                    await PostVote.create({
+                        user: userId,
+                        post: postId,
+                        type: type
+                    });
+                    post.analytics[type + 's'] += 1;
+                }
+            }
+        } else {
+            // Create new vote
+            await PostVote.create({
+                user: userId,
+                post: postId,
+                type: type
+            });
+            post.analytics[type + 's'] += 1;
+        }
+
+        await post.save();
+
+        res.status(200).json({
+            success: true,
+            message: `${type} successfully`
+        });
+
+    } catch (error) {
+        next(new CustomError((error as Error).message));
+    }
+};

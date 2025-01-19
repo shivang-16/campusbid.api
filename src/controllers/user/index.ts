@@ -4,7 +4,8 @@ import IUser from "../../types/IUser";
 import { CustomError } from "../../middlewares/error";
 import { processAvatar, processDocuments } from "../../helpers/processDouments";
 import Bid from "../../models/bidModel";
-import Project from "../../models/projectModel";
+import Project from "../../models/freelance_task";
+import { Follower } from "../../models/followersModel";
 
 export const savePersonalInfo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -130,6 +131,49 @@ export const updateUserMode = async(req: Request, res: Response, next: NextFunct
     next(new CustomError((error as Error).message))
   }
 }
+
+
+export const followUser = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) return next(new CustomError("User not exists", 404));
+
+    const followedUser = await User.findById(userId);
+    if (!followedUser) return next(new CustomError("User not exists", 404));
+
+    // Check if already following
+    const existingFollow = await Follower.findOne({
+      userId: user._id,
+      followerId: followedUser._id
+    });
+
+    if (existingFollow) {
+      // If already following, remove from follower list
+      await Follower.deleteOne({
+        userId: user._id,
+        followerId: followedUser._id
+      });
+      res.status(200).json({
+        success: true,
+        message: "User unfollowed"
+      });
+    } else {
+      // If not following, create a new follower entry
+      await Follower.create({
+        userId: user._id,
+        followerId: followedUser._id
+      });
+      res.status(200).json({
+        success: true,
+        message: "User followed"
+      });
+    }
+  } catch (error) {
+    next(new CustomError((error as Error).message));
+  }
+}
+
 
 export const listUserBids = async(req: Request, res: Response, next: NextFunction) => {
   try {

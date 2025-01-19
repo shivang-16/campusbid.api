@@ -2,6 +2,21 @@ import mongoose, { Document, ObjectId } from 'mongoose';
 import { ICity, ICollege } from './IData';
 import { IState } from 'country-state-city';
 import IUser from './IUser';
+import { IAnalytics } from './helper/analyticsSchema';
+
+export interface IProject extends Document {
+  title: string;
+  description: string;
+  analytics: IAnalytics;
+  ranking: number;
+  status: 'lineup' | 'live' | 'closed';
+  postedBy: ObjectId | IUser; // Reference to the User who created the project
+  categories: string[];
+  files: ISupportingDoc[]; // Array of supporting documents
+ 
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 // Supporting Document Interface
 export interface ISupportingDoc {
@@ -22,7 +37,7 @@ export interface Bids {
 }
 
 // Project Interface
-export interface IProject extends Document {
+export interface IFreelance extends Document {
   title: string;
   description: string;
   budget: {

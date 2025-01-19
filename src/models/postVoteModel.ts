@@ -6,14 +6,14 @@ export interface IVote extends Document {
     type: 'upvote' | 'downvote' | 'special'; // Use an enum to restrict values
 }
 
-const VoteSchema: Schema = new Schema<IVote>({
+const PostVoteSchema: Schema = new Schema<IVote>({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: true },
     type: { type: String, enum: ['upvote', 'downvote', 'special'], required: true },
 }, { timestamps: true });
 
 // Indexes for efficient queries
-VoteSchema.index({ user: 1, post: 1 }, { unique: true });
+PostVoteSchema.index({ user: 1, post: 1, type: 1 }, { unique: true });
 
-const Vote = mongoose.model<IVote>('Vote', VoteSchema);
-export default Vote;
+const PostVote = mongoose.model<IVote>('PostVote', PostVoteSchema);
+export default PostVote;

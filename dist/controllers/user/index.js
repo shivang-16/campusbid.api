@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listFreelancerAssignedProjects = exports.listUsersProjects = exports.listUserBids = exports.updateUserMode = exports.savePersonalInfo = void 0;
+exports.listFreelancerAssignedProjects = exports.listUsersProjects = exports.listUserBids = exports.followUser = exports.updateUserMode = exports.savePersonalInfo = void 0;
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const error_1 = require("../../middlewares/error");
 const processDouments_1 = require("../../helpers/processDouments");
 const bidModel_1 = __importDefault(require("../../models/bidModel"));
-const projectModel_1 = __importDefault(require("../../models/projectModel"));
+const freelance_task_1 = __importDefault(require("../../models/freelance_task"));
+const followersModel_1 = require("../../models/followersModel");
 const savePersonalInfo = async (req, res, next) => {
     try {
         const bodyData = req.body;
@@ -113,6 +114,48 @@ const updateUserMode = async (req, res, next) => {
     }
 };
 exports.updateUserMode = updateUserMode;
+const followUser = async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+        const user = await userModel_1.default.findById(req.user._id);
+        if (!user)
+            return next(new error_1.CustomError("User not exists", 404));
+        const followedUser = await userModel_1.default.findById(userId);
+        if (!followedUser)
+            return next(new error_1.CustomError("User not exists", 404));
+        // Check if already following
+        const existingFollow = await followersModel_1.Follower.findOne({
+            userId: user._id,
+            followerId: followedUser._id
+        });
+        if (existingFollow) {
+            // If already following, remove from follower list
+            await followersModel_1.Follower.deleteOne({
+                userId: user._id,
+                followerId: followedUser._id
+            });
+            res.status(200).json({
+                success: true,
+                message: "User unfollowed"
+            });
+        }
+        else {
+            // If not following, create a new follower entry
+            await followersModel_1.Follower.create({
+                userId: user._id,
+                followerId: followedUser._id
+            });
+            res.status(200).json({
+                success: true,
+                message: "User followed"
+            });
+        }
+    }
+    catch (error) {
+        next(new error_1.CustomError(error.message));
+    }
+};
+exports.followUser = followUser;
 const listUserBids = async (req, res, next) => {
     try {
         const { status } = req.query;
@@ -141,7 +184,7 @@ const listUsersProjects = async (req, res, next) => {
         if (status)
             query.status = status;
         console.log(query, "her eis qyer", req.user._id);
-        const projects = await projectModel_1.default.find(query);
+        const projects = await freelance_task_1.default.find(query);
         console.log(projects, "here");
         res.status(200).json({
             success: true,
@@ -166,7 +209,7 @@ const listFreelancerAssignedProjects = async (req, res, next) => {
         if (status) {
             query.status = status;
         }
-        const projects = await projectModel_1.default.find(query);
+        const projects = await freelance_task_1.default.find(query);
         res.status(200).json({
             success: true,
             projects

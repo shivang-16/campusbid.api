@@ -40,19 +40,6 @@ const userSchema = new Schema<IUser>({
     url: { type: String, default: null },
     key: { type: String, default: null },
   },
-  details: {
-    level: { 
-      number: {type: Number, default: 1} 
-    },
-    points: {
-      number: {type: Number, default: 0} 
-     },
-    rating: {
-      number: {type: Number, default: 0},
-      updatedAt: { type: Date }
-     },
-  },
-  documents: [SupportingDocSchema],
   badges: [
     {
       name: { type: String, default: "Beginner" },

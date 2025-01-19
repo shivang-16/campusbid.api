@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const supportingDocModel_1 = require("./helper/supportingDocModel");
-const analyticsSchema_1 = require("./helper/analyticsSchema");
 const { Schema, model } = mongoose_1.default;
 const projectSchema = new Schema({
     title: {
@@ -19,15 +18,6 @@ const projectSchema = new Schema({
         // required: true,
         // maxlength: 1000,
     },
-    analytics: analyticsSchema_1.analyticsSchema,
-    ranking: {
-        type: Number,
-        default: 0,
-    },
-    status: {
-        type: String,
-        enum: ['lineup', 'live', 'closed'],
-    },
     postedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -38,7 +28,7 @@ const projectSchema = new Schema({
             trim: true,
             ref: "Optionset"
         }],
-    files: [supportingDocModel_1.SupportingDocSchema], // Array of supporting documents
+    media: [supportingDocModel_1.SupportingDocSchema], // Array of supporting documents
     createdAt: {
         type: Date,
         default: Date.now,

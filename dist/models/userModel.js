@@ -28,7 +28,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const crypto_1 = __importDefault(require("crypto"));
-const supportingDocModel_1 = require("./helper/supportingDocModel");
 const locationDataModels_1 = require("./helper/locationDataModels");
 const userSchema = new mongoose_1.Schema({
     name: {
@@ -66,19 +65,6 @@ const userSchema = new mongoose_1.Schema({
         url: { type: String, default: null },
         key: { type: String, default: null },
     },
-    details: {
-        level: {
-            number: { type: Number, default: 1 }
-        },
-        points: {
-            number: { type: Number, default: 0 }
-        },
-        rating: {
-            number: { type: Number, default: 0 },
-            updatedAt: { type: Date }
-        },
-    },
-    documents: [supportingDocModel_1.SupportingDocSchema],
     badges: [
         {
             name: { type: String, default: "Beginner" },

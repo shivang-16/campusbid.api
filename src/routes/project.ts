@@ -6,7 +6,7 @@ import {
   getProjectById,
   getProjectsListing,
   updateSupportingDocs
-} from "../controllers/Project";
+} from "../controllers/Freelance";
 import { checkAuth } from "../middlewares/checkAuth";
 import checkRole from "../middlewares/checkRole";
 

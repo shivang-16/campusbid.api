@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import { IProject } from '../types/IProject';
+import {  IProject } from '../types/IProject';
 import { SupportingDocSchema } from './helper/supportingDocModel';
-import { citySchema, collegeSchema, stateSchema } from './helper/locationDataModels';
+import { analyticsSchema } from './helper/analyticsSchema';
 
 const { Schema, model } = mongoose;
 
-const ProjectSchema = new Schema<IProject>(
+const projectSchema = new Schema<IProject>(
   {
     title: {
       type: String,
@@ -18,53 +18,29 @@ const ProjectSchema = new Schema<IProject>(
       // required: true,
       // maxlength: 1000,
     },
-    budget: {
-      min: { type: Number, required: true },
-      max: { type: Number, required: true },
-      currency: { type: String, default: "INR"}
-    },
-    deadline: {
-      type: Schema.Types.Mixed, 
-      required: true,
+    analytics: analyticsSchema,
+    ranking: {
+      type: Number,
+      default: 0,
     },
     status: {
       type: String,
-      enum: ['open', 'in_progress', 'completed', 'closed'],
-      default: 'open',
-    },
-    assignedBid: {
-      type: Schema.Types.ObjectId,
-      ref: "Bid"
+      enum: ['lineup', 'live', 'closed'],
     },
     postedBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    bids: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Bid',
-      },
-    ],
+    
     categories: [{
       type: String,
       trim: true,
       ref: "Optionset"
     }],
-    skillsRequired: [
-      {
-        type: String,
-        trim: true,
-        ref: "Optionset"
-      },
-    ],
-    supportingDocs: [SupportingDocSchema], // Array of supporting documents
-    college: collegeSchema,
-    location : {
-      city: citySchema,
-      state: stateSchema
-    },
+    
+    files: [SupportingDocSchema], // Array of supporting documents
+    
     createdAt: {
       type: Date,
       default: Date.now,
@@ -78,12 +54,12 @@ const ProjectSchema = new Schema<IProject>(
 );
 
 // Middleware to update updatedAt on each save
-ProjectSchema.pre('save', function (next) {
+projectSchema.pre('save', function (next) {
     this.updatedAt = new Date();
     next();
   });
   
 
-const Project = model<IProject>('Project', ProjectSchema);
+const Project = model<IProject>('Project', projectSchema);
 
 export default Project;

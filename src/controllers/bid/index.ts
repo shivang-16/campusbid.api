@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { CustomError } from "../../middlewares/error";
 import Bid from "../../models/bidModel";
-import Project from "../../models/projectModel"; // Assuming Project model is available
+import Project from "../../models/freelance_task"; // Assuming Project model is available
 import { processDocuments } from "../../helpers/processDouments";
 import { EmailOptions } from "../../utils/sendMail";
 import mongoose from "mongoose";

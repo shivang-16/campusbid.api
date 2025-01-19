@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.closeBid = exports.getBid = exports.listBidders = exports.createBid = void 0;
 const error_1 = require("../../middlewares/error");
 const bidModel_1 = __importDefault(require("../../models/bidModel"));
-const projectModel_1 = __importDefault(require("../../models/projectModel")); // Assuming Project model is available
+const freelance_task_1 = __importDefault(require("../../models/freelance_task")); // Assuming Project model is available
 const processDouments_1 = require("../../helpers/processDouments");
 const mongoose_1 = __importDefault(require("mongoose"));
 const userModel_1 = __importDefault(require("../../models/userModel"));
@@ -20,7 +20,7 @@ const createBid = async (req, res, next) => {
             return next(new error_1.CustomError("Project ID, amount, and proposal are required.", 404));
         }
         // Check if the project exists
-        const projectExists = await projectModel_1.default.findById(projectId);
+        const projectExists = await freelance_task_1.default.findById(projectId);
         if (!projectExists) {
             return next(new error_1.CustomError("Project not found.", 404));
         }

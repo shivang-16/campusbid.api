@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth";
 import googleRoutes from "./routes/googleAuth";
 import userRoutes from "./routes/user";
 import projectRoutes from "./routes/project";
+import postRoutes from "./routes/post";
 import bidRoutes from "./routes/bid";
 import dataRoutes from "./routes/data";
 import { saveWaitlist, saveWaitlistCampusbid } from './controllers/public';
@@ -66,6 +67,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/project", projectRoutes);
 app.use("/api/bid", bidRoutes);
 app.use("/api/data", dataRoutes);
+app.use("/api/post", postRoutes);
 
 app.post('/join-waitlist', saveWaitlist as express.RequestHandler);
 app.post('/api/join-waitlist-campusbid', saveWaitlistCampusbid as express.RequestHandler);
