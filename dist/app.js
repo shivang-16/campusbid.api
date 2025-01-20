@@ -39,6 +39,7 @@ const googleAuth_1 = __importDefault(require("./routes/googleAuth"));
 const user_1 = __importDefault(require("./routes/user"));
 const project_1 = __importDefault(require("./routes/project"));
 const post_1 = __importDefault(require("./routes/post"));
+const files_1 = __importDefault(require("./routes/files"));
 const bid_1 = __importDefault(require("./routes/bid"));
 const data_1 = __importDefault(require("./routes/data"));
 const public_1 = require("./controllers/public");
@@ -80,6 +81,7 @@ exports.app.use("/api/project", project_1.default);
 exports.app.use("/api/bid", bid_1.default);
 exports.app.use("/api/data", data_1.default);
 exports.app.use("/api/post", post_1.default);
+exports.app.use("/api/files", files_1.default);
 exports.app.post('/join-waitlist', public_1.saveWaitlist);
 exports.app.post('/api/join-waitlist-campusbid', public_1.saveWaitlistCampusbid);
 exports.app.get('/', (req, res) => {

@@ -18,7 +18,7 @@ export interface IPost extends Document {
 
 const PostSchema: Schema = new Schema<IPost>({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    text: { type: String, required: true, maxlength: 500 },
+    text: { type: String, maxlength: 500 },
     files: { type: [SupportingDocSchema], default: [] },
     analytics: analyticsSchema,
     type: {

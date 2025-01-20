@@ -28,7 +28,7 @@ const supportingDocModel_1 = require("./helper/supportingDocModel");
 const analyticsSchema_1 = require("./helper/analyticsSchema");
 const PostSchema = new mongoose_1.Schema({
     user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
-    text: { type: String, required: true, maxlength: 500 },
+    text: { type: String, maxlength: 500 },
     files: { type: [supportingDocModel_1.SupportingDocSchema], default: [] },
     analytics: analyticsSchema_1.analyticsSchema,
     type: {

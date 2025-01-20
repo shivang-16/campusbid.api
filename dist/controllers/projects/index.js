@@ -30,6 +30,7 @@ const createProject = async (req, res, next) => {
             success: true,
             message: "Project created successfully",
             project: newProject,
+            signedUrl: filesInfo?.map(doc => doc?.putUrl)
         });
     }
     catch (error) {

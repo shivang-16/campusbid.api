@@ -1,12 +1,11 @@
 import express from "express";
-import { createPost, getPosts } from "../controllers/post";
+import { uploadFiles } from "../controllers/helper";
 import { checkAuth } from "../middlewares/checkAuth";
 
 const router = express.Router();
 
 router.use(checkAuth);
 
-router.post("/create", createPost);
-router.get("/get", getPosts);
+router.post("/upload", uploadFiles);
 
 export default router;

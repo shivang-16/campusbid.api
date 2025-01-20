@@ -24,6 +24,7 @@ const processFiles = async (files) => {
     if (!files || !Array.isArray(files)) {
         return [];
     }
+    console.log(files);
     return await Promise.all(files.map(async (doc) => {
         if (doc === null)
             return;
@@ -34,6 +35,7 @@ const processFiles = async (files) => {
             ContentType: doc.type,
         };
         const putSignedUrl = await (0, getSignedUrl_1.getPutObjectSignedUrl)(putObjectInfo);
+        console.log(putSignedUrl);
         return { putUrl: putSignedUrl, getUrl: `${process.env.CAMPUSBID_AWS_ACCOUNT_URL}/${bucketKey}`, key: bucketKey, ...doc };
     }));
 };

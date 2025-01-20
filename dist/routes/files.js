@@ -4,10 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const post_1 = require("../controllers/post");
+const helper_1 = require("../controllers/helper");
 const checkAuth_1 = require("../middlewares/checkAuth");
 const router = express_1.default.Router();
 router.use(checkAuth_1.checkAuth);
-router.post("/create", post_1.createPost);
-router.get("/get", post_1.getPosts);
+router.post("/upload", helper_1.uploadFiles);
 exports.default = router;

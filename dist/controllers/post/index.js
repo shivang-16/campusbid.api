@@ -5,30 +5,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.votePost = exports.getPosts = exports.createPost = void 0;
 const error_1 = require("../../middlewares/error");
-const processDouments_1 = require("../../helpers/processDouments");
 const postModel_1 = __importDefault(require("../../models/postModel"));
 const postVoteModel_1 = __importDefault(require("../../models/postVoteModel"));
 const createPost = async (req, res, next) => {
     try {
         const { text, files, isComment, type } = req.body;
+        console.log(req.body);
         // Validate type
         if (!['post', 'spill'].includes(type)) {
-            return next(new error_1.CustomError("Invalid type. Must be 'post' or 'spill'."));
+            return next(new error_1.CustomError("Invalid type. Must be 'post' or 'spill'.", 400));
         }
         // Validate either text or files along with type
         if ((!text && !files) || (!type)) {
-            return next(new error_1.CustomError("Either 'text' with 'type' or 'files' with 'type' is required."));
+            return next(new error_1.CustomError("Either 'text' with 'type' or 'files' with 'type' is required.", 400));
         }
         // If both text and files are absent
         if (!text && !files) {
-            return next(new error_1.CustomError("Both 'text' and 'files' cannot be empty."));
+            return next(new error_1.CustomError("Both 'text' and 'files' cannot be empty.", 400));
         }
         // If files are provided, process them
         let filesInfo = [];
         if (files) {
-            filesInfo = await (0, processDouments_1.processFiles)(files);
+            filesInfo = files;
         }
-        console.log(text, type, "here");
         // Create a new bid
         const newPost = await postModel_1.default.create({
             user: req.user._id,
@@ -36,9 +35,7 @@ const createPost = async (req, res, next) => {
             isComment,
             type,
             files: filesInfo?.map(doc => ({
-                fileName: doc?.fileName,
                 fileUrl: doc?.getUrl,
-                key: doc?.key,
                 ...doc
             }))
         });
@@ -46,16 +43,18 @@ const createPost = async (req, res, next) => {
             success: true,
             message: "Post created successfully",
             post: newPost,
+            signedUrls: filesInfo?.map(doc => doc?.putUrl)
         });
     }
     catch (error) {
+        console.log(error);
         next(new error_1.CustomError(error.message));
     }
 };
 exports.createPost = createPost;
 const getPosts = async (req, res, next) => {
     try {
-        const posts = await postModel_1.default.find();
+        const posts = await postModel_1.default.find().populate("user").sort({ createdAt: -1 });
         res.json({
             success: true,
             posts

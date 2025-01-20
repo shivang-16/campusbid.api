@@ -29,6 +29,7 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
             success: true,
             message: "Project created successfully",
             project: newProject,
+            signedUrl: filesInfo?.map(doc => doc?.putUrl)
         })
     } catch (error) {
         next(new CustomError((error as Error).message));
