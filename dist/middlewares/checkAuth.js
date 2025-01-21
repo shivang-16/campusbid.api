@@ -9,7 +9,6 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const checkAuth = async (req, res, next) => {
     const { token } = req.cookies;
-    console.log(token, "here is the token");
     if (!token)
         return next(new error_1.CustomError("Login First", 400));
     const secret = process.env.JWT_SECRET;

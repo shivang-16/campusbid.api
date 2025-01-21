@@ -10,4 +10,6 @@ const router = express_1.default.Router();
 router.use(checkAuth_1.checkAuth);
 router.post("/create", post_1.createPost);
 router.get("/get", post_1.getPosts);
+router.post("/vote", post_1.votePost);
+router.get("/vote/check", post_1.checkVote);
 exports.default = router;

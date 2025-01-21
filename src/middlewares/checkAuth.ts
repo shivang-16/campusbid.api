@@ -16,7 +16,6 @@ export const checkAuth = async (
   next: NextFunction,
 ) => {
   const { token } = req.cookies;
-  console.log(token, "here is the token")
   if (!token) return next(new CustomError("Login First", 400));
 
   const secret = process.env.JWT_SECRET;

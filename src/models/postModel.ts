@@ -11,7 +11,7 @@ export interface IPost extends Document {
     type: 'post' | 'spill';
     isComment: {
         comment: boolean;
-        post?: mongoose.Schema.Types.ObjectId;
+        refPost?: mongoose.Schema.Types.ObjectId;
     };
     bgColor: string; // Added bgColor field
 }
@@ -56,7 +56,7 @@ PostSchema.pre<IPost>('save', function (this: IPost, next) {
 
 // Validation for conditional requirement of `post` when `comment` is true
 PostSchema.pre<IPost>('save', function (this: IPost, next) { 
-    if (this.isComment.comment && !this.isComment.post) { 
+    if (this.isComment.comment && !this.isComment.refPost) { 
         return next(new Error('Post field is required if this document is a comment.')); 
     } 
     next(); 

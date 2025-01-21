@@ -62,7 +62,7 @@ PostSchema.pre('save', function (next) {
 });
 // Validation for conditional requirement of `post` when `comment` is true
 PostSchema.pre('save', function (next) {
-    if (this.isComment.comment && !this.isComment.post) {
+    if (this.isComment.comment && !this.isComment.refPost) {
         return next(new Error('Post field is required if this document is a comment.'));
     }
     next();

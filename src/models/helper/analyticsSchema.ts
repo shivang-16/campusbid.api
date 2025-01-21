@@ -12,10 +12,10 @@ export type IAnalytics = {
 }
 
 export const analyticsSchema = new Schema(
-   { views: { type: Number, default: 0 },
-    upvotes: { type: Number, default: 0 },
-    downvotes: { type: Number, default: 0 },
-    special: { type: Number, default: 0 },
-    engagement: { type: Number, default: 0 },
+   { views: { type: Number, default: 0, min: 0 },
+    upvotes: { type: Number, default: 0, min: 0 },
+    downvotes: { type: Number, default: 0, min: 0 },
+    special: { type: Number, default: 0, min: 0 },
+    engagement: { type: Number, default: 0, min: 0 },
  } );
   
