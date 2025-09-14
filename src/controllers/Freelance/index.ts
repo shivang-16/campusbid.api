@@ -17,6 +17,7 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
         if(!user) next(new CustomError("User not exists", 404))
 
         const docsInfo = await processDocuments(supportingDocs)
+        if(!docsInfo) next(new CustomError("Docs info not available"))
         // Create a new project instance
         const newProject: IFreelance = new Freelance_Task({
             title,
