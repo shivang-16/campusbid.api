@@ -30,19 +30,11 @@ export const register = async (
     // });
 
 try {
-await sendMail({
-email,
-subject: "Verification",
-message: OTP,
-tag: "otp",
-});
 } catch (error: any) {
 console.error("Error sending verification email:", error);
+// Return immediately after calling next to prevent further execution
 return next(new CustomError("Failed to send verification email. Please try again later.", 500));
 }
-     await sendMail({
-      email,
-      subject: "Verification",
       message: OTP,
       tag: "otp",
     });
