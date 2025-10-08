@@ -6,8 +6,15 @@ dotenv.config();
 let db: mongoose.Connection;
 
 const ConnectToDB = async () => {
-  const DatabaseUrl = process.env.DATABASE_URL as string;
-  if(!DatabaseUrl) throw(new Error("Database url is not defined"))
+const ConnectToDB = async () => {
+const DatabaseUrl = process.env.DATABASE_URL as string;
+if (!DatabaseUrl) {
+throw new Error("Database URL is not defined. Please set the DATABASE_URL environment variable.");
+}
+try {
+await mongoose.connect(DatabaseUrl);
+db = mongoose.connection;
+console.log("CampusBid_DB Connected.");
 
   try {
     await mongoose.connect(DatabaseUrl);
