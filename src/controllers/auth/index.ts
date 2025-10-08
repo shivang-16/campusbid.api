@@ -29,7 +29,17 @@ export const register = async (
     //   },
     // });
 
-    try {
+try {
+await sendMail({
+email,
+subject: "Verification",
+message: OTP,
+tag: "otp",
+});
+} catch (error: any) {
+console.error("Error sending verification email:", error);
+return next(new CustomError("Failed to send verification email. Please try again later.", 500));
+}
      await sendMail({
       email,
       subject: "Verification",
