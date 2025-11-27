@@ -7,6 +7,8 @@ let db: mongoose.Connection;
 
 const ConnectToDB = async () => {
   const DatabaseUrl = process.env.DATABASE_URL as string;
+  console.log(DatabaseUrl);
+  if(!DatabaseUrl) returnl
 
   try {
     await mongoose.connect(DatabaseUrl);
