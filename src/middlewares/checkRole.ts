@@ -12,8 +12,6 @@ const checkRole = (role: 'freelancer' | 'client') => {
   };
 };
 
-
-const checkRoleForCustomer = (role: 'customer' | 'client') => {
 const checkRole = (role: 'freelancer' | 'client' | 'customer') => {
 return async (req: Request, res: Response, next: NextFunction) => {
 if (req.user.role !== role) {
@@ -33,6 +31,7 @@ return next(new CustomError("Not Authorised", 403));
 next();
 };
 */
+export default checkRole; // Export the unified checkRole
 export default checkRole; // Export the unified checkRole
     if (role === "freelancer" && req.user.role !== role)
       return next(new CustomError("Not Authorised", 403));
