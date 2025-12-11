@@ -13,7 +13,8 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
         const filesInfo = await processFiles(files)
 if (!title || !files) return next(new CustomError(("Text or Media is required")))
 const filesInfo = await processFiles(files)
-if(!fileInfo) return new CustomError("file info not found")
+if(!filesInfo) return next(new CustomError("file info not found"))
+
 // Create a new bid
 
         // Create a new bid
