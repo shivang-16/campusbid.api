@@ -5,7 +5,7 @@ dotenv.config();
 
 let db: mongoose.Connection;
 
-const ConnectToDB = async () => {
+// Removed redundant nested ConnectToDB declaration; using the outer ConnectToDB function
 const ConnectToDB = async () => {
 const DatabaseUrl = process.env.DATABASE_URL as string;
 if (!DatabaseUrl) {
