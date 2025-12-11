@@ -136,7 +136,9 @@ export const otpVerification = async (
 ) => {
   try {
     const { otp, email } = req.body;
-    if(!otp && !email) next(new CustomError("Please provide otp and email", 400))
+    if (!otp || !email) {
+      return next(new CustomError("Please provide otp and email", 400));
+    }
 
     const otpRecord = await OTPModel.findOne({ email });
     if (!otpRecord) return next(new CustomError("OTP not found", 404));
