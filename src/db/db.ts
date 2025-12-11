@@ -15,6 +15,12 @@ try {
 await mongoose.connect(DatabaseUrl);
 db = mongoose.connection;
 console.log("CampusBid_DB Connected.");
+} catch (error) {
+console.error("MongoDB connection error:", error);
+process.exit(1); // Exit process on connection failure
+}
+};
+console.log("CampusBid_DB Connected.");
 
   try {
     await mongoose.connect(DatabaseUrl);
